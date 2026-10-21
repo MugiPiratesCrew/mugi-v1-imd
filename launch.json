@@ -1,0 +1,26 @@
+{
+  "kind": "evm_contracts",
+  "contracts": [
+    {
+      "contract": "MugiIMDCrewFactory",
+      "constructorArgs": []
+    },
+    {
+      "contract": "MugiV1IMDDeploymentFactory",
+      "constructorArgs": [
+        "0x20714d50f4675c366de30b603728a90ddddb240f",
+        "$contract:MugiIMDCrewFactory",
+        "0xbc3c1605ac7a5e7781e7923e764c5e673c9480991b0d532f1799b78af4ac4359"
+      ]
+    },
+    {
+      "contract": "MugiIMDAccountingFactory",
+      "constructorArgs": []
+    },
+    {
+      "contract": "MugiIMDEngineFactory",
+      "constructorArgs": []
+    }
+  ],
+  "notes": "Four recorded factories. The owner later deploys the hash-pinned hook, ten crew tokens, and modules through these factories. Accounting and liquidity-engine modules use ordinary CALL and require owner binding before configuration and pool funding. Source admission remains pending. Descendant contracts are not assumed to be individual IMD Explorer artifacts. No explorer source verification requested."
+}
