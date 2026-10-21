@@ -111,6 +111,12 @@ contract MugiIMDPriceOracle {
         revert InsufficientHistory();
     }
 
+    /// @notice Identical read ABI to the hook; aggregation avoids redundant CALLs.
+    function buybackTwap(uint8 crew) external view returns (int24 tick, uint32 secondsUsed, uint16 observations) {
+        (tick, secondsUsed) = consult(crew);
+        observations = self.pools[crew].count;
+    }
+
     /// @notice Minimum token output after 0.3% LP fee and 3% slippage; no game fee on hook buybacks.
     /// @dev Quotes base units; all crew tokens and native ETH use 18 decimals.
     function quoteMinimum(uint8 crew, uint256 ethAmount, int24 currentTick)

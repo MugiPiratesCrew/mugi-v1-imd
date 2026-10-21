@@ -25,11 +25,13 @@ import {PoolModifyLiquidityTest} from "v4-core/src/test/PoolModifyLiquidityTest.
 contract GameRandomnessMock {
     uint256 public requests;
     mapping(uint256 => address) public receivers;
+    mapping(uint256 => uint64) public fulfilledAt;
     function requestRandomness() external returns (uint256 request) {
         request = ++requests;
         receivers[request] = msg.sender;
     }
     function fulfill(uint256 request, uint256 word) external {
+        if (fulfilledAt[request] == 0) fulfilledAt[request] = uint64(block.timestamp);
         MugiGameHook(payable(receivers[request])).receiveRandomness(request, word);
     }
 }
@@ -380,9 +382,10 @@ contract MugiGameHookTest is MugiGameTestBase {
         game.claimEth(payable(LATE));
         assertEq(EARLY.balance, earlyBefore + earlyFinal);
         assertEq(LATE.balance, lateBefore + lateTotal);
+        (uint256[10] memory lateTokens,,) = game.previewAccount(LATE);
         vm.prank(LATE);
-        vm.expectRevert(MugiGameHook.InvalidState.selector);
         game.claimTokens();
+        assertEq(MugiCrewToken(crew[9]).balanceOf(LATE), lateTokens[9]);
         vm.prank(EARLY);
         assertEq(game.claimEth(payable(EARLY)), 0);
         vm.expectRevert(MugiGameHook.InvalidState.selector);
@@ -537,7 +540,7 @@ contract MugiGameHookTest is MugiGameTestBase {
         uint256 reserved = game.reservedPlayerEth();
         uint256 communityBefore = COMMUNITY.balance;
         assertGt(reserved, 0);
-        assertEq(game.escrowBacking(9), 0);
+        assertGt(game.escrowBacking(9), 0);
 
         vm.warp(game.claimsExpireAt());
         game.sweepExpiredFinalClaims();

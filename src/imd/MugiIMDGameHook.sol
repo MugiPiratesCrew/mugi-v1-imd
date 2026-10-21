@@ -10,14 +10,16 @@ import {BeforeSwapDelta} from "v4-core/src/types/BeforeSwapDelta.sol";
 import {TransientStateLibrary} from "v4-core/src/libraries/TransientStateLibrary.sol";
 import {MugiIMDLedger} from "./modules/MugiIMDLedger.sol";
 import {MugiIMDV4Engine as MugiV4Engine} from "./modules/MugiIMDV4Engine.sol";
-import {MugiIMDV4Fees} from "./libraries/MugiIMDV4Fees.sol";
 import {Currency} from "v4-core/src/types/Currency.sol";
 import {MugiIMDBuybacks as MugiBuybacks} from "./modules/MugiIMDBuybacks.sol";
 import {MugiIMDPriceOracle as MugiPriceOracle} from "./modules/MugiIMDPriceOracle.sol";
 import {MugiCrewToken} from "../../src/game/MugiCrewToken.sol";
 import {MugiAirdrop} from "../../src/game/MugiAirdrop.sol";
 
-interface IMugiRandomness { function requestRandomness() external returns (uint256); }
+interface IMugiRandomness {
+    function requestRandomness() external returns (uint256);
+    function fulfilledAt(uint256 requestId) external view returns (uint64);
+}
 interface IMugiV2FinaleReceiver {
     function receiveV1Finale(uint8 survivor, address survivorToken, uint256 survivorTokens) external payable;
 }
@@ -33,13 +35,15 @@ contract MugiIMDGameHook {
     uint160 public constant HOOK_FLAGS = 0x2aec;
     uint256 public constant WINDOW = 22 hours;
     uint256 public constant FINAL_CLAIM_WINDOW = 30 days;
-    enum Phase { Setup, Live, AwaitingRandomness, OutcomeReady, Settling, Finalized, Aborted }
+    uint256 public constant RANDOMNESS_TIMEOUT = 7 days;
+    enum Phase { Setup, Live, AwaitingRandomness, OutcomeReady, Settling, Finalized, Aborted, EmergencyUnwinding, EmergencyClosed }
     address public owner;
     address public pendingOwner;
     address public immutable teamTreasury;
     address public immutable communityTreasury;
     IPoolManager public immutable poolManager;
     uint256 public immutable initialSupply;
+    address public immutable v2MigrationTarget;
     address public randomnessProvider;
     address public imdVerifier;
     MugiAirdrop public airdrop;
@@ -60,8 +64,11 @@ contract MugiIMDGameHook {
     uint256[10] public treasure;
     uint256[10] public ownBurnBudget;
     uint64[10] public ownLastTrade;
-    bool public paused;
+    bool private pauseRequested;
+    uint64 public pauseUntil;
+    uint8 public pauseRound;
     bool public airdropRetired;
+    bool public migrated;
     uint256 public settlementLiquidityEth;
     uint256 public settlementBuybackEth;
     bool private entered;
@@ -97,6 +104,8 @@ contract MugiIMDGameHook {
     event PauseChanged(bool paused);
     event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event EmergencyRecoveryStarted(uint256 indexed requestId, uint64 deadline);
+    event EmergencyRecoveryClosed(uint16 aliveMask, uint256 recoveryEth, uint64 claimsDeadline);
 
     constructor(
         address owner_, IPoolManager manager_, address team_, address community_, address v2MigrationTarget_, uint256 initialSupply_
@@ -107,6 +116,7 @@ contract MugiIMDGameHook {
             revert InvalidConfiguration();
         owner = owner_; poolManager = manager_; teamTreasury = team_; communityTreasury = community_;
         initialSupply = initialSupply_;
+        v2MigrationTarget = v2MigrationTarget_;
         emit OwnershipTransferred(address(0), owner_);
     }
 
@@ -143,19 +153,9 @@ contract MugiIMDGameHook {
         if (phase != Phase.Setup || address(ledger) == address(0) || tokens[0] != address(0) || address(airdrop_).code.length == 0
             || randomness_.code.length == 0 || (imd_ != address(0) && imd_.code.length == 0)
             || airdrop_.hook() != address(this) || airdrop_.initialSupply() != initialSupply) revert InvalidConfiguration();
-        for (uint8 i; i < 10; ++i) {
-            MugiCrewToken token = MugiCrewToken(tokens_[i]);
-            if (token.hook() != address(this) || token.characterId() != i || token.totalSupply() != 0
-                || airdrop_.tokens(i) != tokens_[i]) revert InvalidConfiguration();
-        }
         tokens = tokens_; airdrop = airdrop_; randomnessProvider = randomness_; imdVerifier = imd_;
         configuredAt = uint64(block.timestamp);
-        ledger.initialize(tokens_);
-        ledger.setExcluded(address(poolManager), true);
-        ledger.setExcluded(address(engine), true);
-        ledger.setExcluded(address(airdrop_), true);
-        ledger.setExcluded(teamTreasury, true);
-        ledger.setExcluded(communityTreasury, true);
+        ledger.initializeSeason(tokens_, address(airdrop_), address(engine), teamTreasury, communityTreasury, address(poolManager));
         emit SeasonConfigured(tokens_, address(airdrop_), randomness_, imd_);
     }
 
@@ -215,11 +215,27 @@ contract MugiIMDGameHook {
         _pay(payable(owner), refund);
     }
 
-    function setPaused(bool value) external onlyOwner { paused = value; emit PauseChanged(value); }
+    /// @notice One emergency trading pause per round, lasting at most one hour.
+    /// Early release never restores the round's allowance; expiry needs no owner.
+    function setPaused(bool value) external onlyOwner {
+        if (value) {
+            if (phase != Phase.Live || block.timestamp >= nextCutoff || pauseRound == eliminations + 1) revert InvalidState();
+            pauseRound = eliminations + 1;
+            pauseUntil = uint64(block.timestamp + 1 hours);
+            if (pauseUntil > nextCutoff) pauseUntil = nextCutoff;
+        }
+        pauseRequested = value; emit PauseChanged(value);
+    }
+
+    function paused() public view returns (bool) { return pauseRequested && block.timestamp < pauseUntil; }
+
+    /// @notice Fixed at the round cutoff, including when no request can be accepted.
+    function randomnessDeadline() public view returns (uint64) { return uint64(nextCutoff + RANDOMNESS_TIMEOUT); }
 
     /// @notice Fixed clock cutoff applies even when nobody submits this transaction promptly.
     function requestElimination() external guarded {
-        if (phase != Phase.Live || eliminations >= 9 || block.timestamp < nextCutoff) revert InvalidState();
+        if (phase != Phase.Live || eliminations >= 9 || block.timestamp < nextCutoff
+            || block.timestamp >= randomnessDeadline()) revert InvalidState();
         phase = Phase.AwaitingRandomness;
         pendingRequest = IMugiRandomness(randomnessProvider).requestRandomness();
         emit EliminationRequested(eliminations + 1, pendingRequest, aliveMask);
@@ -229,6 +245,13 @@ contract MugiIMDGameHook {
     function receiveRandomness(uint256 requestId, uint256 word) external {
         if (msg.sender != randomnessProvider) revert Unauthorized();
         if (phase != Phase.AwaitingRandomness || requestId != pendingRequest) revert InvalidState();
+        // A word first stored at/after the precommitted deadline cannot revive
+        // the season. An on-time word with deferred delivery remains mandatory.
+        uint64 deadline = randomnessDeadline();
+        if (block.timestamp >= deadline) {
+            uint64 received = IMugiRandomness(randomnessProvider).fulfilledAt(requestId);
+            if (received == 0 || received >= deadline) return;
+        }
         uint256 index = word % (10 - eliminations);
         for (uint8 i; i < 10; ++i) {
             if ((aliveMask & (uint16(1) << i)) == 0) continue;
@@ -237,6 +260,43 @@ contract MugiIMDGameHook {
         }
         phase = Phase.OutcomeReady;
         emit OutcomeRecorded(eliminations + 1, requestId, defeatedCrew);
+    }
+
+    /// @notice No reroll: an overdue unfulfilled request closes the season through
+    /// bounded LP withdrawals. Existing ETH claims/team fees stay reserved. The
+    /// remainder is shared equally between live crews and pro rata within each
+    /// crew's frozen wallet-plus-virtual economic supply. No arbitrary winner or
+    /// owner withdrawal is introduced. Unallocated shares expire to community.
+    function recoverStalledRandomness(uint8 maxPools) external guarded {
+        if (maxPools == 0 || maxPools > 10) revert InvalidState();
+        if (phase == Phase.AwaitingRandomness || (phase == Phase.Live && eliminations < 9)) {
+            uint64 deadline = randomnessDeadline();
+            if (block.timestamp < deadline) revert InvalidState();
+            if (phase == Phase.AwaitingRandomness) {
+                uint64 received = IMugiRandomness(randomnessProvider).fulfilledAt(pendingRequest);
+                if (received != 0 && received < deadline) revert InvalidState();
+            } else pendingRequest = 0;
+            phase = Phase.EmergencyUnwinding; settlementCursor = 0;
+            emit EmergencyRecoveryStarted(pendingRequest, deadline);
+        }
+        if (phase != Phase.EmergencyUnwinding) revert InvalidState();
+        protocolTransfer = true; _materializeFees();
+        uint8 done;
+        while (settlementCursor < 10 && done < maxPools) {
+            uint8 crew = settlementCursor++;
+            if ((aliveMask & (uint16(1) << crew)) == 0) continue;
+            MugiV4Engine.LiquidityResult memory removed = engine.removeLiquidity(crew, 0, 0);
+            _fees(crew, removed.ethFees, removed.tokenFees);
+            ++done;
+        }
+        protocolTransfer = false;
+        if (settlementCursor == 10) {
+            uint256 recoveryEth = address(this).balance - teamEth - ledger.reservedEth();
+            ledger.emergencyFinalize(aliveMask, recoveryEth);
+            phase = Phase.EmergencyClosed;
+            claimsExpireAt = uint64(block.timestamp + FINAL_CLAIM_WINDOW);
+            emit EmergencyRecoveryClosed(aliveMask, recoveryEth, claimsExpireAt);
+        }
     }
 
     /// @notice Permissionless bounded settlement. Reverts preserve the recorded outcome and completed batches.
@@ -404,10 +464,12 @@ contract MugiIMDGameHook {
 
     /// @notice Manual V2 handoff after V2 is deployed and its source binding is set.
     function migrateToV2(address target) external onlyOwner guarded {
-        if (phase != Phase.Finalized || target.code.length == 0) revert InvalidState();
+        if (phase != Phase.Finalized || migrated || target.code.length == 0
+            || (v2MigrationTarget != address(0) && target != v2MigrationTarget)) revert InvalidState();
+        migrated = true;
         uint8 survivor;
         while ((aliveMask & (uint16(1) << survivor)) == 0) ++survivor;
-        uint256 inventory = MugiCrewToken(tokens[survivor]).balanceOf(address(this));
+        uint256 inventory = MugiCrewToken(tokens[survivor]).balanceOf(address(this)) - ledger.escrowBacking(survivor);
         uint256 ethAmount = address(this).balance - teamEth - ledger.reservedEth();
         protocolTransfer = true;
         MugiCrewToken(tokens[survivor]).transfer(target, inventory);
@@ -420,7 +482,7 @@ contract MugiIMDGameHook {
     /// remaining migration backing is burned; neither can be redirected to owner.
     function sweepExpiredFinalClaims() external guarded {
         uint64 deadline = claimsExpireAt;
-        if (phase != Phase.Finalized || deadline == 0 || block.timestamp < deadline) revert InvalidState();
+        if ((phase != Phase.Finalized && phase != Phase.EmergencyClosed) || deadline == 0 || block.timestamp < deadline) revert InvalidState();
         (uint256 expiredEth, uint256[10] memory expiredTokens) = ledger.expireFinalClaims();
         protocolTransfer = true;
         for (uint8 i; i < 10; ++i) {
@@ -428,6 +490,9 @@ contract MugiIMDGameHook {
         }
         protocolTransfer = false;
         claimsExpireAt = 0;
+        // Terminal recovery has no V2 handoff: all unallocated shares and dust
+        // join expired player claims. No treasury call can block LP recovery.
+        if (phase == Phase.EmergencyClosed) expiredEth = address(this).balance - teamEth;
         _pay(payable(communityTreasury), expiredEth);
         emit FinalClaimsExpired(deadline, expiredEth);
     }
@@ -469,7 +534,7 @@ contract MugiIMDGameHook {
         uint8 crew = engine.crewForPool(key);
         if (sender == address(engine)) return (IHooks.beforeSwap.selector, BeforeSwapDelta.wrap(0), 0);
         _requireLive(crew); _observe(crew);
-        (BeforeSwapDelta delta, uint256 fee) = MugiIMDV4Fees.beforeSwapFee(params); _gameFee(crew, fee);
+        (BeforeSwapDelta delta, uint256 fee) = engine.beforeSwapFee(params); _gameFee(crew, fee);
         return (IHooks.beforeSwap.selector, delta, 0);
     }
 
@@ -478,7 +543,7 @@ contract MugiIMDGameHook {
     {
         uint8 crew = engine.crewForPool(key);
         if (sender == address(engine)) return (IHooks.afterSwap.selector, 0);
-        (int128 returned, uint256 fee) = MugiIMDV4Fees.afterSwapFee(params, delta); _gameFee(crew, fee); _observe(crew);
+        (int128 returned, uint256 fee) = engine.afterSwapFee(params, delta); _gameFee(crew, fee); _observe(crew);
         return (IHooks.afterSwap.selector, returned);
     }
 
@@ -521,19 +586,20 @@ contract MugiIMDGameHook {
     }
     function _observe(uint8 crew) private { (, int24 tick,) = engine.getPoolState(crew); prices.update(crew, tick); }
     function _requireLive(uint8 crew) private view {
-        if (crew >= 10 || phase != Phase.Live || paused || block.timestamp >= nextCutoff || (aliveMask & (uint16(1) << crew)) == 0)
+        if (crew >= 10 || phase != Phase.Live || paused() || block.timestamp >= nextCutoff || (aliveMask & (uint16(1) << crew)) == 0)
             revert InvalidState();
     }
     function _requireClaims() private view {
-        if (phase != Phase.Live) revert InvalidState();
+        if (phase != Phase.Live && phase != Phase.Finalized && phase != Phase.EmergencyClosed) revert InvalidState();
         if (phase == Phase.Live && block.timestamp >= nextCutoff) revert InvalidState();
+        if (phase != Phase.Live && block.timestamp >= claimsExpireAt) revert InvalidState();
     }
     function _requireEthClaim() private view {
         if (phase == Phase.Setup || phase == Phase.Aborted) revert InvalidState();
-        if (phase == Phase.Finalized && block.timestamp >= claimsExpireAt) revert InvalidState();
+        if ((phase == Phase.Finalized || phase == Phase.EmergencyClosed) && block.timestamp >= claimsExpireAt) revert InvalidState();
     }
     function _requireTeamWithdrawal() private view {
-        if (phase != Phase.Live && phase != Phase.Finalized) revert InvalidState();
+        if (phase != Phase.Live && phase != Phase.Finalized && phase != Phase.EmergencyClosed) revert InvalidState();
         if (phase == Phase.Live && block.timestamp >= nextCutoff) revert InvalidState();
     }
     function _pay(address payable recipient, uint256 amount) private {
@@ -562,12 +628,10 @@ contract MugiIMDGameHook {
     function unredeemedGameFees() external view returns (uint256) { return hookFeeClaims; }
     function poolKey(uint8 crew) external view returns (PoolKey memory) { _forwardView(address(engine)); }
     function poolId(uint8 crew) external view returns (PoolId) { _forwardView(address(engine)); }
-    function poolState(uint8 crew) external view returns (uint160, int24, uint128) { return engine.getPoolState(crew); }
+    function poolState(uint8 crew) external view returns (uint160, int24, uint128) { _forwardView(address(engine)); }
     function positionLiquidity(uint8 crew) external view returns (uint128) { _forwardView(address(engine)); }
     function buybackTwap(uint8 crew) external view returns (int24 tick, uint32 secondsUsed, uint16 observations) {
-        if (crew >= 10) revert MugiPriceOracle.InvalidCrew();
-        (tick, secondsUsed) = prices.consult(crew);
-        observations = prices.observationCount(crew);
+        _forwardView(address(prices));
     }
     function planHash(MugiBuybacks.BuybackPlan calldata plan) external view returns (bytes32) { return budgets.hash(plan); }
     function roundBudget(uint64 id) external view returns (MugiBuybacks.Budget memory) { _forwardView(address(budgets)); }

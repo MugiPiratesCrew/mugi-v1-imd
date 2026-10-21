@@ -1,0 +1,10 @@
+{
+  "chainId": 1,
+  "contract": "src/imd/MugiIMDGameHook.sol:MugiIMDGameHook",
+  "owner": "0x20714d50f4675c366de30b603728a90ddddb240f",
+  "poolManager": "0x000000000004444c5dc75cb358380d2e3de08a90",
+  "teamTreasury": "0x20714d50f4675c366de30b603728a90ddddb240f",
+  "communityTreasury": "0x20714d50f4675c366de30b603728a90ddddb240f",
+  "v2MigrationTarget": "0x0000000000000000000000000000000000000000",
+  "initialSupply": "1000000000000000000000000"
+}

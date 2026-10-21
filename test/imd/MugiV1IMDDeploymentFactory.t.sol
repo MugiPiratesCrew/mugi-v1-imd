@@ -216,8 +216,8 @@ contract MugiV1IMDDeploymentFactoryTest is Test {
         }
         assertEq(game.seededMask(), 1023);
         assertEq(OWNER.balance, 0);
-        game.setPaused(true);
-        assertTrue(game.paused());
+        vm.expectRevert(MugiGameHook.InvalidState.selector);
+        game.setPaused(true); // Setup cannot consume a live-round pause allowance.
         game.abortPrelaunch();
         vm.stopPrank();
         assertEq(uint8(game.phase()), uint8(MugiGameHook.Phase.Aborted));
@@ -324,10 +324,10 @@ contract MugiV1IMDDeploymentFactoryTest is Test {
         assertEq(game.pendingOwner(), NEXT_OWNER);
         vm.expectRevert(MugiGameHook.Unauthorized.selector);
         vm.prank(NEXT_OWNER);
-        game.setPaused(true);
+        game.setPaused(false);
         vm.prank(OWNER);
-        game.setPaused(true);
-        assertTrue(game.paused());
+        game.setPaused(false);
+        assertFalse(game.paused());
     }
 
     function testOnlyNominatedWalletCanAcceptOwnership() public {
@@ -367,7 +367,7 @@ contract MugiV1IMDDeploymentFactoryTest is Test {
         vm.prank(OWNER);
         game.abortPrelaunch();
         vm.startPrank(NEXT_OWNER);
-        game.setPaused(true);
+        game.setPaused(false);
         game.abortPrelaunch();
         vm.stopPrank();
         assertApproxEqAbs(NEXT_OWNER.balance, 1 ether, 2);

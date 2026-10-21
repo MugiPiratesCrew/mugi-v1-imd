@@ -2,6 +2,8 @@
 pragma solidity ^0.8.26;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {MugiCrewToken} from "../../game/MugiCrewToken.sol";
+import {MugiAirdrop} from "../../game/MugiAirdrop.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 /// @notice Bounded, lazy accounting for a ten-crew season. All amounts ending in
@@ -44,6 +46,7 @@ contract MugiIMDLedger {
         uint8 eliminationCount;
         bool initialized;
         bool finalized;
+        bool claimsExpired;
     }
 
     address public immutable hook;
@@ -62,6 +65,26 @@ contract MugiIMDLedger {
     error InvalidToken();
     error InvalidClaim();
     error InexactConversion();
+
+    /// @notice Performs the hook's one-time crew binding checks and accounting
+    /// exclusions in one authenticated call. The hook validates the airdrop's
+    /// hook/supply binding and its own Setup/configuration state before calling.
+    function initializeSeason(
+        address[10] memory tokens, address airdrop, address engine,
+        address team, address community, address manager
+    ) public onlyHook {
+        for (uint8 i; i < TOKEN_COUNT; ++i) {
+            MugiCrewToken token = MugiCrewToken(tokens[i]);
+            if (token.hook() != hook || token.characterId() != i || token.totalSupply() != 0
+                || MugiAirdrop(airdrop).tokens(i) != tokens[i]) revert InvalidConfiguration();
+        }
+        initialize(tokens);
+        setExcluded(manager, true);
+        setExcluded(engine, true);
+        setExcluded(airdrop, true);
+        setExcluded(team, true);
+        setExcluded(community, true);
+    }
 
     function initialize(address[10] memory tokens) public onlyHook {
         if (self.initialized) revert InvalidConfiguration();
@@ -151,25 +174,42 @@ contract MugiIMDLedger {
         ++self.eliminationCount;
     }
 
-    /// @notice Closes final-token materialization when the protocol-owned final
-    /// position is handed to the separately deployed V2 game.
-    /// @dev Wallet-held V1 receipts are never seized. Their virtual backing is
-    /// moved with the hook inventory, so final token claims must be disabled by
-    /// the caller in the same transaction.
+    /// @notice Stops new rounds while retaining earned survivor-token claims.
+    /// @dev The hook keeps escrowBacking separate from migratable inventory and
+    /// allows materialization until its immutable final claim deadline.
     function finalizeMigration(uint8 finalToken) public onlyHook {
         if (
             !self.initialized || self.finalized || self.eliminationCount != 9 || finalToken >= TOKEN_COUNT
                 || self.aliveMask != (uint16(1) << finalToken)
         ) revert InvalidRound();
-        self.walletScaled[finalToken] = 0;
-        self.virtualScaled[finalToken] = 0;
-        self.escrowBacking[finalToken] = 0;
+        self.finalized = true;
+    }
+
+    /// @notice Records the non-random terminal payout after a stalled season's
+    /// live positions have been unwound. Existing rewards and token escrow remain.
+    /// @dev The hook supplies newly recovered ETH, excluding team fees and this
+    /// ledger's prior ETH reserve. Equal shares go to each still-live crew, then
+    /// pro rata to that crew's eligible wallet plus virtual balances. Empty-crew
+    /// shares and division dust are not reserved. The hook owns recovery timing,
+    /// terminal transfer freezes, the claim deadline and unallocated-ETH disposal.
+    function emergencyFinalize(uint16 aliveMask, uint256 recoveryWei) public onlyHook {
+        if (
+            !self.initialized || self.finalized || aliveMask == 0 || aliveMask != self.aliveMask
+                || self.eventCount >= TOKEN_COUNT
+        ) revert InvalidRound();
+        Round storage round = self.rounds[self.eventCount];
+        round.finale = true;
+        round.survivorMask = aliveMask;
+        round.survivorCount = _count(aliveMask);
+        _recordRewards(round, recoveryWei);
+        ++self.eventCount;
         self.finalized = true;
     }
 
     /// @dev The caller immediately transfers returned amounts from its excluded
     /// escrow to account, through the normal token callbacks, in this transaction.
     function claimTokens(address account) public onlyHook returns (uint256[10] memory amounts) {
+        if (self.claimsExpired) revert InvalidClaim();
         _sync(account);
         if (self.excluded[account]) revert InvalidClaim();
         for (uint8 i; i < TOKEN_COUNT; ++i) {
@@ -182,7 +222,7 @@ contract MugiIMDLedger {
     }
 
     function claimToken(address account, uint8 tokenId, uint256 amount) public onlyHook returns (uint256) {
-        if (tokenId >= TOKEN_COUNT || self.excluded[account]) revert InvalidClaim();
+        if (self.claimsExpired || tokenId >= TOKEN_COUNT || self.excluded[account]) revert InvalidClaim();
         _sync(account);
         if (amount > self.accounts[account].virtualScaled[tokenId] / SCALE) revert InvalidClaim();
         _debitVirtual(account, tokenId, amount);
@@ -190,6 +230,7 @@ contract MugiIMDLedger {
     }
 
     function claimEth(address account) public onlyHook returns (uint256 amount) {
+        if (self.claimsExpired) revert InvalidClaim();
         _sync(account);
         if (self.excluded[account]) revert InvalidClaim();
         amount = self.accounts[account].earnedEth;
@@ -205,13 +246,15 @@ contract MugiIMDLedger {
         public onlyHook
         returns (uint256 expiredEth, uint256[10] memory expiredTokenBacking)
     {
-        if (!self.initialized || !self.finalized) revert InvalidClaim();
+        if (!self.initialized || !self.finalized || self.claimsExpired) revert InvalidClaim();
+        self.claimsExpired = true;
         expiredEth = self.reservedEth;
         self.reservedEth = 0;
         for (uint8 i; i < TOKEN_COUNT; ++i) {
             expiredTokenBacking[i] = self.escrowBacking[i];
             self.escrowBacking[i] = 0;
             self.virtualScaled[i] = 0;
+            self.walletScaled[i] = 0;
         }
     }
 
@@ -265,16 +308,11 @@ contract MugiIMDLedger {
         view
         returns (uint256[10] memory virtualScaled, uint256 earnedEth)
     {
-        if (self.excluded[account]) return (virtualScaled, 0);
+        if (self.excluded[account] || self.claimsExpired) return (virtualScaled, 0);
         Account storage stored = self.accounts[account];
         virtualScaled = stored.virtualScaled;
         earnedEth = stored.earnedEth;
-        if (stored.cursor == self.eventCount) {
-            if (self.finalized) {
-                for (uint8 i; i < TOKEN_COUNT; ++i) virtualScaled[i] = 0;
-            }
-            return (virtualScaled, earnedEth);
-        }
+        if (stored.cursor == self.eventCount) return (virtualScaled, earnedEth);
 
         uint256[10] memory walletScaled;
         for (uint8 i; i < TOKEN_COUNT; ++i) {
@@ -295,11 +333,6 @@ contract MugiIMDLedger {
             for (uint8 i; i < TOKEN_COUNT; ++i) {
                 if ((round.survivorMask & (uint16(1) << i)) != 0) virtualScaled[i] += allocation;
             }
-        }
-        // Final V1 token rights are not materialized once the final position
-        // migrates to V2. Earlier earned ETH has already been accumulated above.
-        if (self.finalized) {
-            for (uint8 i; i < TOKEN_COUNT; ++i) virtualScaled[i] = 0;
         }
     }
 

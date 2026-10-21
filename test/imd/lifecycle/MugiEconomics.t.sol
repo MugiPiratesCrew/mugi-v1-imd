@@ -81,6 +81,8 @@ contract MugiEconomicsTest is MugiGameTestBase {
         uint256 finalEth = address(game).balance + game.unredeemedGameFees()
             + _ethForLiquidity(9, game.positionLiquidity(9), false) - game.teamEth() - oldReserved;
         uint256 totalSupply = MugiCrewToken(crew[9]).totalSupply();
+        uint256 finalBacking = game.escrowBacking(9);
+        uint256 finalEligible = game.eligibleSupply(9);
         vm.warp(game.nextCutoff());
         vm.expectEmit(true, false, false, true, address(game));
         emit MugiGameHook.TeamTokenFeesPaid(9, expectedTokenFees);
@@ -88,15 +90,15 @@ contract MugiEconomicsTest is MugiGameTestBase {
         assertEq(MugiCrewToken(crew[9]).balanceOf(TEAM), expectedTokenFees);
         assertEq(game.teamTokens(9), 0);
         assertEq(game.teamEth(), expectedEthFees);
-        assertEq(game.escrowBacking(9), 0);
-        uint256 finalInventory = MugiCrewToken(crew[9]).balanceOf(address(game));
+        assertEq(game.escrowBacking(9), finalBacking);
+        uint256 finalInventory = MugiCrewToken(crew[9]).balanceOf(address(game)) - finalBacking;
         assertGt(finalInventory, 0, "finalization retains tokens for manual V2 handoff");
-        assertEq(game.eligibleSupply(9), 0);
+        assertEq(game.eligibleSupply(9), finalEligible);
         assertEq(game.reservedPlayerEth(), oldReserved);
         assertEq(migratedEth, 0);
         game.migrateToV2(address(this));
         assertEq(migratedEth, finalEth);
-        assertEq(MugiCrewToken(crew[9]).balanceOf(address(game)), 0);
+        assertEq(MugiCrewToken(crew[9]).balanceOf(address(game)), finalBacking);
         assertEq(migratedTokens, finalInventory);
         assertEq(migratedTokens, MugiCrewToken(crew[9]).balanceOf(address(this)));
         assertEq(MugiCrewToken(crew[9]).totalSupply(), totalSupply);
@@ -105,9 +107,12 @@ contract MugiEconomicsTest is MugiGameTestBase {
         game.withdrawTeamFees();
         assertEq(TEAM.balance, expectedEthFees);
         assertEq(MugiCrewToken(crew[9]).balanceOf(TEAM), expectedTokenFees);
+        (uint256[10] memory lateClaims,,) = game.previewAccount(LATE);
+        assertGt(lateClaims[9], 0);
         vm.prank(LATE);
-        vm.expectRevert(MugiGameHook.InvalidState.selector);
-        game.claimTokens();
+        uint256[10] memory lateReceived = game.claimTokens();
+        assertEq(lateReceived[9], lateClaims[9]);
+        assertEq(game.escrowBacking(9), finalBacking - lateReceived[9]);
         vm.prank(LATE);
         assertEq(game.claimEth(payable(LATE)), 0);
         _assertSolvent();
@@ -148,37 +153,48 @@ contract MugiEconomicsTest is MugiGameTestBase {
         _assertTreasuryHasNoGameRights();
     }
 
-    function testTerminalMigrationDisablesFinalTokenClaimsAndRetainsEarlierEthClaims() public {
+    function testTerminalMigrationPreservesFinalTokenClaimsAndEarlierEthClaims() public {
         _fundTreasure(0);
         for (uint8 i; i < 9; ++i) _round(0);
         address[5] memory actors = _actors();
         uint256[5] memory earlierRewards;
+        uint256[5] memory earlierTokens;
+        uint256[5] memory earlierFractions;
         for (uint256 a; a < actors.length; ++a) {
-            (, earlierRewards[a],) = game.previewAccount(actors[a]);
+            (uint256[10] memory amounts, uint256 reward, uint256[10] memory fractions) = game.previewAccount(actors[a]);
+            earlierRewards[a] = reward;
+            earlierTokens[a] = amounts[9];
+            earlierFractions[a] = fractions[9];
+            assertGt(amounts[9], 0);
         }
-        (, uint256 bobReward,) = game.previewAccount(BOB);
-        assertGt(bobReward, 0);
+        assertGt(earlierRewards[1], 0);
+        uint256 backing = game.escrowBacking(9);
         vm.warp(game.nextCutoff());
         game.finalize();
+        assertEq(game.escrowBacking(9), backing);
         for (uint256 a; a < actors.length; ++a) {
-            vm.prank(actors[a]);
-            vm.expectRevert(MugiGameHook.InvalidState.selector);
-            game.claimTokens();
             (uint256[10] memory claimable, uint256 owed, uint256[10] memory fractions) = game.previewAccount(actors[a]);
-            assertEq(claimable[9], 0);
-            assertEq(fractions[9], 0);
+            assertEq(claimable[9], earlierTokens[a]);
+            assertEq(fractions[9], earlierFractions[a]);
             assertEq(owed, earlierRewards[a]);
         }
-        assertEq(game.escrowBacking(9), 0);
-        uint256 finalInventory = MugiCrewToken(crew[9]).balanceOf(address(game));
+        uint256 finalInventory = MugiCrewToken(crew[9]).balanceOf(address(game)) - backing;
         assertGt(finalInventory, 0);
         game.migrateToV2(address(this));
         assertEq(migratedTokens, finalInventory);
-        assertEq(MugiCrewToken(crew[9]).balanceOf(address(game)), 0);
+        assertEq(MugiCrewToken(crew[9]).balanceOf(address(game)), backing);
         for (uint256 a; a < actors.length; ++a) {
+            uint256 beforeBalance = MugiCrewToken(crew[9]).balanceOf(actors[a]);
+            vm.prank(actors[a]);
+            uint256[10] memory received = game.claimTokens();
+            assertEq(received[9], earlierTokens[a]);
+            assertEq(MugiCrewToken(crew[9]).balanceOf(actors[a]), beforeBalance + earlierTokens[a]);
+            backing -= earlierTokens[a];
+            assertEq(game.escrowBacking(9), backing);
             vm.prank(actors[a]);
             assertEq(game.claimEth(payable(actors[a])), earlierRewards[a]);
         }
+        assertEq(MugiCrewToken(crew[9]).balanceOf(address(game)), backing);
         _assertSolvent();
     }
 
@@ -262,7 +278,7 @@ contract MugiEconomicsTest is MugiGameTestBase {
         pendingMigrationEth = address(game).balance + game.unredeemedGameFees()
             + _ethForLiquidity(survivor, finalLiquidity, false) - game.teamEth() - game.reservedPlayerEth();
         pendingMigrationTokens[survivor] = MugiCrewToken(crew[survivor]).balanceOf(address(game))
-            + _tokensForLiquidity(survivor, finalLiquidity) - game.teamTokens(survivor);
+            + _tokensForLiquidity(survivor, finalLiquidity) - game.teamTokens(survivor) - game.escrowBacking(survivor);
         vm.warp(game.nextCutoff());
         game.finalize();
         _assertBuckets(0);
@@ -345,12 +361,9 @@ contract MugiEconomicsTest is MugiGameTestBase {
             uint256 inventory = game.escrowBacking(i) + game.teamTokens(i) + pendingMigrationTokens[i];
             if (!finalized && (game.aliveMask() & (uint16(1) << i)) != 0) inventory += initialTokenDust[i];
             assertEq(MugiCrewToken(crew[i]).balanceOf(address(game)), inventory, "escrow/team/dust reconcile");
-            if (finalized) {
-                assertEq(game.eligibleSupply(i), 0, "final V1 claims are closed for V2 migration");
-                assertEq(game.escrowBacking(i), 0);
-                continue;
-            }
-            assertEq(game.eligibleSupply(i), eligibleSum[i], "system inventory cannot gain holder rights");
+            // Terminal reward denominators are frozen; escrow remains a live
+            // liability until claimed or expired, independent of V2 inventory.
+            if (!finalized) assertEq(game.eligibleSupply(i), eligibleSum[i], "system inventory cannot gain holder rights");
             assertEq(game.escrowBacking(i), (virtualSum[i] + 95_126_814_720 - 1) / 95_126_814_720);
         }
         _assertTreasuryHasNoGameRights();

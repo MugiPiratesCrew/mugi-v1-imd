@@ -149,7 +149,7 @@ contract MugiAdversarialTest is MugiGameTestBase {
         _assertSolvent();
     }
 
-    function testPausedSeasonCanFinalizeMigrateAndPayEarlierRewardsWithoutReopeningTrading() public {
+    function testExpiredPauseDoesNotBlockFinalizationMigrationOrEarlierRewards() public {
         _fundTreasure(0);
         game.setPaused(true);
         for (uint8 i; i < 9; ++i) _round(0);
@@ -157,7 +157,7 @@ contract MugiAdversarialTest is MugiGameTestBase {
         assertGt(earlierReward, 0);
         vm.warp(game.nextCutoff());
         game.finalize();
-        assertTrue(game.paused());
+        assertFalse(game.paused());
         (, uint256 owed,) = game.previewAccount(BOB);
         assertEq(owed, earlierReward);
         vm.prank(BOB);
@@ -167,7 +167,7 @@ contract MugiAdversarialTest is MugiGameTestBase {
         uint256 pendingMigration = address(game).balance - game.teamEth() - game.reservedPlayerEth();
         game.migrateToV2(address(this));
         assertEq(migratedEth, pendingMigration);
-        assertTrue(game.paused());
+        assertFalse(game.paused());
         _assertSolvent();
     }
 

@@ -44,6 +44,9 @@ contract MugiVRFAdapter {
     uint256 public activeRequestId;
     bool private requesting;
     mapping(uint256 => Request) public requests;
+    /// @notice First on-chain storage time, used by the hook's fixed timeout.
+    /// A deferred callback never changes this time or requests a replacement word.
+    mapping(uint256 => uint64) public fulfilledAt;
 
     error InvalidConfiguration();
     error OnlyHook();
@@ -109,6 +112,7 @@ contract MugiVRFAdapter {
         if (randomWords.length != 1) revert InvalidWords();
         r.word = randomWords[0]; // Zero is a valid VRF word.
         r.ready = true;
+        fulfilledAt[requestId] = uint64(block.timestamp);
         emit RandomnessStored(requestId, randomWords[0]);
         _deliver(requestId, r);
     }

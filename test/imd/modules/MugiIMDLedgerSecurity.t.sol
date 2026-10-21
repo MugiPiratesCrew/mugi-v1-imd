@@ -51,6 +51,8 @@ contract MugiIMDLedgerSecurityTest is Test {
         vm.expectRevert(MugiIMDLedger.Unauthorized.selector);
         ledger.initialize(tokens);
         vm.expectRevert(MugiIMDLedger.Unauthorized.selector);
+        ledger.initializeSeason(tokens, address(0), ENGINE, address(0), address(0), address(0));
+        vm.expectRevert(MugiIMDLedger.Unauthorized.selector);
         ledger.setExcluded(ALICE, true);
         vm.expectRevert(MugiIMDLedger.Unauthorized.selector);
         ledger.beforeBalanceChange(ALICE, ENGINE);
@@ -60,6 +62,8 @@ contract MugiIMDLedgerSecurityTest is Test {
         ledger.recordElimination(0, 1023, 1 ether);
         vm.expectRevert(MugiIMDLedger.Unauthorized.selector);
         ledger.finalizeMigration(0);
+        vm.expectRevert(MugiIMDLedger.Unauthorized.selector);
+        ledger.emergencyFinalize(1023, 1 ether);
         vm.expectRevert(MugiIMDLedger.Unauthorized.selector);
         ledger.claimTokens(ALICE);
         vm.expectRevert(MugiIMDLedger.Unauthorized.selector);

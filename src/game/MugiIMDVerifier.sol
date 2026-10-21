@@ -44,10 +44,13 @@ contract MugiIMDVerifier is Ownable {
         keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
 
     address public immutable trustedConsumer;
-    address public oracleSigner;
-    uint16 public minimumPanelSize;
-    uint16 public minimumQuorum;
-    uint64 public maximumAge;
+    // Trust is fixed for this season. Governance can pin/revoke requests but
+    // cannot substitute its own signer or weaken the accepted evidence policy.
+    // A contract signer may itself be upgradeable; its trust remains external.
+    address public immutable oracleSigner;
+    uint16 public immutable minimumPanelSize;
+    uint16 public immutable minimumQuorum;
+    uint64 public immutable maximumAge;
     mapping(bytes32 => RequestPolicy) public requests;
 
     error InvalidConfiguration();
@@ -61,9 +64,14 @@ contract MugiIMDVerifier is Ownable {
     constructor(address owner_, address signer_, address consumer_, uint16 panelSize_, uint16 quorum_, uint64 maxAge_)
         Ownable(owner_)
     {
-        if (consumer_ == address(0)) revert InvalidConfiguration();
+        if (consumer_ == address(0) || signer_ == address(0) || panelSize_ < 2
+            || quorum_ < 2 || quorum_ > panelSize_ || maxAge_ == 0) revert InvalidConfiguration();
         trustedConsumer = consumer_;
-        _setPolicy(signer_, panelSize_, quorum_, maxAge_);
+        oracleSigner = signer_;
+        minimumPanelSize = panelSize_;
+        minimumQuorum = quorum_;
+        maximumAge = maxAge_;
+        emit PolicyUpdated(signer_, panelSize_, quorum_, maxAge_);
     }
 
     /// @notice Governance pins the exact admitted request and expected canonical plan.
@@ -85,10 +93,6 @@ contract MugiIMDVerifier is Ownable {
     function revokeRequest(bytes32 requestId) external onlyOwner {
         requests[requestId].active = false;
         emit RequestRevoked(requestId);
-    }
-
-    function setPolicy(address signer_, uint16 panelSize_, uint16 quorum_, uint64 maxAge_) external onlyOwner {
-        _setPolicy(signer_, panelSize_, quorum_, maxAge_);
     }
 
     /// @notice proof = abi.encode(Attestation, bytes signature).
@@ -150,14 +154,4 @@ contract MugiIMDVerifier is Ownable {
         return MessageHashUtils.toTypedDataHash(domainSeparator(), structHash);
     }
 
-    function _setPolicy(address signer_, uint16 panelSize_, uint16 quorum_, uint64 maxAge_) private {
-        if (signer_ == address(0) || panelSize_ < 2 || quorum_ < 2 || quorum_ > panelSize_ || maxAge_ == 0) {
-            revert InvalidConfiguration();
-        }
-        oracleSigner = signer_;
-        minimumPanelSize = panelSize_;
-        minimumQuorum = quorum_;
-        maximumAge = maxAge_;
-        emit PolicyUpdated(signer_, panelSize_, quorum_, maxAge_);
-    }
 }

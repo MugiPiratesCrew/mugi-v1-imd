@@ -1,0 +1,60 @@
+Compiling 1 files with Solc 0.8.26
+Solc 0.8.26 finished in 67.49s
+Compiler run successful with warnings:
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> src/imd/MugiIMDGameHook.sol:558:29:
+    |
+558 |     function previewAccount(address account) external view returns (uint256[10 ...
+    |                             ^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> src/imd/MugiIMDGameHook.sol:559:29:
+    |
+559 |     function eligibleSupply(uint8 crew) external view returns (uint256) { _forwardView(address(ledger)); }
+    |                             ^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> src/imd/MugiIMDGameHook.sol:561:28:
+    |
+561 |     function escrowBacking(uint8 crew) external view returns (uint256) { _forwardView(address(ledger)); }
+    |                            ^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> src/imd/MugiIMDGameHook.sol:563:22:
+    |
+563 |     function poolKey(uint8 crew) external view returns (PoolKey memory) { _forwardView(address(engine)); }
+    |                      ^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> src/imd/MugiIMDGameHook.sol:564:21:
+    |
+564 |     function poolId(uint8 crew) external view returns (PoolId) { _forwardView(address(engine)); }
+    |                     ^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> src/imd/MugiIMDGameHook.sol:566:32:
+    |
+566 |     function positionLiquidity(uint8 crew) external view returns (uint128) { _forwardView(address(engine)); }
+    |                                ^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> src/imd/MugiIMDGameHook.sol:573:26:
+    |
+573 |     function roundBudget(uint64 id) external view returns (MugiBuybacks.Budget memory) { _forwardView(address(budgets)); }
+    |                          ^^^^^^^^^
+
+2026-10-21T19:50:36.362365Z  WARN evm::traces::external: etherscan config not found
+
+Ran 1 test for test/scratch/VrfStall.t.sol:VrfStallTest
+[FAIL: stalled VRF request leaves the season permanently in AwaitingRandomness] testUnfulfilledRandomnessCanBeRequestedAgain() (gas: 85895)
+Suite result: FAILED. 0 passed; 1 failed; 0 skipped; finished in 28.49ms (225.14µs CPU time)
+
+Ran 1 test suite in 30.00ms (28.49ms CPU time): 0 tests passed, 1 failed, 0 skipped (1 total tests)
+
+Failing tests:
+Encountered 1 failing test in test/scratch/VrfStall.t.sol:VrfStallTest
+[FAIL: stalled VRF request leaves the season permanently in AwaitingRandomness] testUnfulfilledRandomnessCanBeRequestedAgain() (gas: 85895)
+
+Encountered a total of 1 failing tests, 0 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 1 failed test

@@ -1,8 +1,10 @@
 # Mugi V1 IMD source admission candidate
 
-This is a sanitized local Foundry source bundle. IMD source admission is PENDING.
-Creating this directory does not publish a repository, submit an IMD job, pay any
-fee, deploy a contract, verify source in an explorer, or prove hackathon eligibility.
+This is the revised Foundry source for the Mugi V1 IMD submission. Source
+admission remains PENDING. The previous job
+`a6715145-76db-498f-9ca9-a11ed38d82a8` was blocked without deploying contracts.
+See `docs/validation/vrf-stall-repair/RECOVERY.md` for the revised lifecycle and
+`docs/IMD_FINDINGS_RESPONSE.md` for the response to all nine findings.
 
 The proposed manifest records four factories. They permit owner-authorized later
 deployment of the Mugi hook, ten crew tokens, airdrop, VRF adapter, IMD verifier,
@@ -26,8 +28,22 @@ Run it with `forge test --match-contract MugiIMDProjectFactoryForkTest -vv`.
 It creates state locally on a fork; a fork result is not a public deployment.
 
 Compiler: Solidity 0.8.26, Cancun, optimizer 200, via IR, bytecode hash none.
-Recheck the hook initcode hash from these exact compiled sources against any
-prepared launch.json before submission. No keys or private RPC URLs belong here.
+The complete public constructor inputs are in `hook-constructor.json`. Rebuild
+and check the committed hook creation bytecode plus ABI-encoded arguments:
+
+```sh
+python3 scripts/check-hook-commitment.py
+```
+
+It checks the compiler settings, runtime/initcode size and `launch.json` commitment.
+No signatures, network writes or deployments occur. The script requires Python 3
+and Foundry (the submission verifier uses v1.8.3). Changing a constructor input or
+Solidity source requires an explicitly reviewed replacement commitment; maintainers
+can then regenerate it using `--write-manifest` before preparing a new request.
+The zero V2 target explicitly selects a one-time owner-selected future V2 receiver;
+a nonzero configured target is immutable and enforced. Team/community addresses
+and initial supply are public and unchanged from the prior request. No keys or
+private RPC URLs belong here.
 Inventory SHA-256 hashes cover every shipped file except inventory.json itself.
 Build products are not part of the source inventory. launch.json, if supplied,
 contains only validated public constructor values and standardized public notes.

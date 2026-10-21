@@ -9,6 +9,8 @@ import {PoolKey} from "v4-core/src/types/PoolKey.sol";
 import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
 import {Currency} from "v4-core/src/types/Currency.sol";
 import {BalanceDelta} from "v4-core/src/types/BalanceDelta.sol";
+import {BeforeSwapDelta} from "v4-core/src/types/BeforeSwapDelta.sol";
+import {MugiIMDV4Fees} from "../libraries/MugiIMDV4Fees.sol";
 import {StateLibrary} from "v4-core/src/libraries/StateLibrary.sol";
 import {TickMath} from "v4-core/src/libraries/TickMath.sol";
 import {SqrtPriceMath} from "v4-core/src/libraries/SqrtPriceMath.sol";
@@ -185,6 +187,19 @@ contract MugiIMDV4Engine {
     function positionLiquidity(uint8 crew) public view returns (uint128) {
         return _pool(crew).liquidity;
     }
+
+    /// @notice Hook-ABI read alias; keeps aggregation in the bound execution module.
+    function poolState(uint8 crew) external view returns (uint160, int24, uint128) {
+        return getPoolState(crew);
+    }
+
+    function beforeSwapFee(IPoolManager.SwapParams calldata params)
+        external pure returns (BeforeSwapDelta, uint256)
+    { return MugiIMDV4Fees.beforeSwapFee(params); }
+
+    function afterSwapFee(IPoolManager.SwapParams calldata params, BalanceDelta delta)
+        external pure returns (int128, uint256)
+    { return MugiIMDV4Fees.afterSwapFee(params, delta); }
 
     /// @notice Exact v4 full-range token requirements, rounded up to cover settlement.
     /// @dev Returns zero when the whole requested addition is mathematically unexecutable.
