@@ -293,6 +293,9 @@ contract MugiIMDLedger {
         self.accounts[account].virtualScaled[tokenId] -= scaled;
         self.virtualScaled[tokenId] -= scaled;
         self.escrowBacking[tokenId] -= amount;
+        // Terminal callbacks ignore protocol inventory movements. Credit only
+        // earned claims here; the hook transfers escrow atomically afterward.
+        if (self.finalized) self.walletScaled[tokenId] += scaled;
     }
 
     function _sync(address account) private {

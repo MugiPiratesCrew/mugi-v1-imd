@@ -173,8 +173,13 @@ contract MugiV1IMDDeploymentFactoryTest is Test {
         MugiGameHook game = _deployComplete();
         for (uint8 crew; crew < 10; ++crew) {
             MugiCrewToken token = MugiCrewToken(factory.tokens(crew));
-            vm.expectRevert();
-            token.initialize("Changed", "BAD", crew, address(game));
+            (bool initialized, bytes memory result) = address(token).call(
+                abi.encodeWithSignature("initialize(string,string,uint8,address)", "Changed", "BAD", crew, address(game))
+            );
+            assertFalse(initialized);
+            assertEq(result.length, 0, "initializer selector must be absent");
+            assertEq(token.hook(), address(game));
+            assertEq(token.characterId(), crew);
             vm.expectRevert(MugiCrewToken.NotHook.selector);
             vm.prank(OWNER);
             token.mint(OWNER, 1 ether);

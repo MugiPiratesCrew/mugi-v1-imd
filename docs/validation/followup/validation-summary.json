@@ -1,0 +1,188 @@
+{
+  "validatedAt": "2026-10-21T20:50:31.910586+00:00",
+  "sourceBaseCommit": "028d37769edce6e38324182b8909392a9852af16",
+  "candidateStatus": "unsubmitted follow-up candidate",
+  "tests": {
+    "passed": 131,
+    "failed": 0,
+    "skipped": 0,
+    "suites": 15
+  },
+  "fork": {
+    "chainId": 1,
+    "rpc": "https://ethereum-rpc.publicnode.com",
+    "blockNumber": 26243437,
+    "blockHash": "0x4fd384a91faad357baf09e355102940d13e6e720646d064d1e834da5ccbaa29f",
+    "observedAt": "2026-10-21T20:41:53.087Z",
+    "scope": "local fork tests only"
+  },
+  "hook": {
+    "hookInitCodeHash": "0x08f972c762e16058099e4d4b614fe24f360fd1780af043308c475cab65d39b3d",
+    "constructor": {
+      "chainId": 1,
+      "contract": "src/imd/MugiIMDGameHook.sol:MugiIMDGameHook",
+      "owner": "0x20714d50f4675c366de30b603728a90ddddb240f",
+      "poolManager": "0x000000000004444c5dc75cb358380d2e3de08a90",
+      "teamTreasury": "0x20714d50f4675c366de30b603728a90ddddb240f",
+      "communityTreasury": "0x20714d50f4675c366de30b603728a90ddddb240f",
+      "v2MigrationTarget": "0x0000000000000000000000000000000000000000",
+      "initialSupply": "1000000000000000000000000"
+    },
+    "compiler": {
+      "solc": "0.8.26",
+      "evm_version": "cancun",
+      "optimizer": true,
+      "optimizer_runs": 200,
+      "via_ir": true,
+      "bytecode_hash": "none"
+    },
+    "runtimeBytes": 24483,
+    "initcodeBytes": 25355,
+    "manifestMatches": true
+  },
+  "productionSizes": {
+    "MugiIMDCrewFactory": {
+      "source": "src/imd/MugiIMDCrewFactory.sol",
+      "sourceSha256": "bfba787ddb12ba3b0355292c5e4314ee1af0b9b65cf92165c8a6658f19a1e0de",
+      "runtimeBytes": 6117,
+      "creationBytes": 6143
+    },
+    "MugiIMDLedger": {
+      "source": "src/imd/modules/MugiIMDLedger.sol",
+      "sourceSha256": "279372720d4ab88f047613dc34435699a079bb2e6072724609be58f2ff462a06",
+      "runtimeBytes": 7979,
+      "creationBytes": 8217
+    },
+    "MugiIMDAccountingFactory": {
+      "source": "src/imd/MugiIMDAccountingFactory.sol",
+      "sourceSha256": "4c0cd0f2683adaad8f7b85d692007cf7b20b03272e9f6716eb365deceec310b6",
+      "runtimeBytes": 18080,
+      "creationBytes": 18106
+    },
+    "MugiIMDSwapRouter": {
+      "source": "src/imd/MugiIMDSwapRouter.sol",
+      "sourceSha256": "2c7b913a079dbee278c9a672215a387377656e593f8c850bb2637ca98e93cdf3",
+      "runtimeBytes": 3816,
+      "creationBytes": 4164
+    },
+    "MugiIMDEngineFactory": {
+      "source": "src/imd/MugiIMDEngineFactory.sol",
+      "sourceSha256": "5c5a404a2f8cb2af2ed9f3d2ebe0f8b2b1df1d6d8828996b21646da8d5e0926a",
+      "runtimeBytes": 13039,
+      "creationBytes": 13065
+    },
+    "IMugiEngineHook": {
+      "source": "src/imd/MugiIMDEngineFactory.sol",
+      "sourceSha256": "5c5a404a2f8cb2af2ed9f3d2ebe0f8b2b1df1d6d8828996b21646da8d5e0926a",
+      "runtimeBytes": 0,
+      "creationBytes": 0
+    },
+    "MugiIMDBuybacks": {
+      "source": "src/imd/modules/MugiIMDBuybacks.sol",
+      "sourceSha256": "102b2da0e164ff14de4804b94fbad18255d42c398aab9bdc6f6cc4c9495524f3",
+      "runtimeBytes": 4994,
+      "creationBytes": 5176
+    },
+    "IMugiIMDBuybackPlanVerifier": {
+      "source": "src/imd/modules/MugiIMDBuybacks.sol",
+      "sourceSha256": "102b2da0e164ff14de4804b94fbad18255d42c398aab9bdc6f6cc4c9495524f3",
+      "runtimeBytes": 0,
+      "creationBytes": 0
+    },
+    "IMugiCrewTokenHook": {
+      "source": "src/game/MugiCrewToken.sol",
+      "sourceSha256": "d1543630c5a60d3e89fc1ff6954bea3dd895f831c4f2278c65a8c7d69f9081ae",
+      "runtimeBytes": 0,
+      "creationBytes": 0
+    },
+    "MugiCrewToken": {
+      "source": "src/game/MugiCrewToken.sol",
+      "sourceSha256": "d1543630c5a60d3e89fc1ff6954bea3dd895f831c4f2278c65a8c7d69f9081ae",
+      "runtimeBytes": 2799,
+      "creationBytes": 3852
+    },
+    "MugiIMDPriceOracle": {
+      "source": "src/imd/modules/MugiIMDPriceOracle.sol",
+      "sourceSha256": "44f38a2781c9d8b6f9b0a798b7ff8f20b72817d3203a244c50c8cf322d533cdc",
+      "runtimeBytes": 3744,
+      "creationBytes": 3897
+    },
+    "IMugiVRFCoordinator": {
+      "source": "src/game/MugiVRFAdapter.sol",
+      "sourceSha256": "02bd87e52f080171acb88b85048eff3cfed154649d39dcba7a035820fab1f9cc",
+      "runtimeBytes": 0,
+      "creationBytes": 0
+    },
+    "MugiVRFAdapter": {
+      "source": "src/game/MugiVRFAdapter.sol",
+      "sourceSha256": "02bd87e52f080171acb88b85048eff3cfed154649d39dcba7a035820fab1f9cc",
+      "runtimeBytes": 2481,
+      "creationBytes": 2924
+    },
+    "IMugiRandomnessReceiver": {
+      "source": "src/game/MugiVRFAdapter.sol",
+      "sourceSha256": "02bd87e52f080171acb88b85048eff3cfed154649d39dcba7a035820fab1f9cc",
+      "runtimeBytes": 0,
+      "creationBytes": 0
+    },
+    "MugiIMDV4Fees": {
+      "source": "src/imd/libraries/MugiIMDV4Fees.sol",
+      "sourceSha256": "64fec6b08c4317dcd1cdff5f13973016db92ffae2f191520b0ea601b55a69cac",
+      "runtimeBytes": 16,
+      "creationBytes": 44
+    },
+    "MugiAirdrop": {
+      "source": "src/game/MugiAirdrop.sol",
+      "sourceSha256": "21c049cae368c9276a69dfec08c10a5293e24210eade9666b90c9b5ed6ee7916",
+      "runtimeBytes": 3273,
+      "creationBytes": 4051
+    },
+    "MugiV1IMDDeploymentFactory": {
+      "source": "src/imd/MugiV1IMDDeploymentFactory.sol",
+      "sourceSha256": "f218482762c3e6c8f2f2b2101588fec5dd84da6384dcfb3d96d5abdf464cd5cf",
+      "runtimeBytes": 18663,
+      "creationBytes": 18938
+    },
+    "MugiIMDVerifier": {
+      "source": "src/game/MugiIMDVerifier.sol",
+      "sourceSha256": "675db74da875da5e4f5309b8d89cfba89a38473dcd64b15ee102c76e3e47a954",
+      "runtimeBytes": 3943,
+      "creationBytes": 4578
+    },
+    "MugiIMDV4Engine": {
+      "source": "src/imd/modules/MugiIMDV4Engine.sol",
+      "sourceSha256": "7eb592b9e0fcaf31a80b959994fe72426a898ab140bbdcac12a309000e58baa5",
+      "runtimeBytes": 12036,
+      "creationBytes": 12384
+    },
+    "MugiIMDCrewToken": {
+      "source": "src/imd/MugiIMDCrewToken.sol",
+      "sourceSha256": "5178e2b3e0782a2a9590dd7656a0d21cee5b9df774668441874597b0d2f2bbd3",
+      "runtimeBytes": 2799,
+      "creationBytes": 3852
+    },
+    "IMugiRandomness": {
+      "source": "src/imd/MugiIMDGameHook.sol",
+      "sourceSha256": "871ad6c55a22be3513ed36f30ad36d11976b00b314428a8323327b1e7bec9f7d",
+      "runtimeBytes": 0,
+      "creationBytes": 0
+    },
+    "MugiIMDGameHook": {
+      "source": "src/imd/MugiIMDGameHook.sol",
+      "sourceSha256": "871ad6c55a22be3513ed36f30ad36d11976b00b314428a8323327b1e7bec9f7d",
+      "runtimeBytes": 24483,
+      "creationBytes": 25163
+    },
+    "IMugiV2FinaleReceiver": {
+      "source": "src/imd/MugiIMDGameHook.sol",
+      "sourceSha256": "871ad6c55a22be3513ed36f30ad36d11976b00b314428a8323327b1e7bec9f7d",
+      "runtimeBytes": 0,
+      "creationBytes": 0
+    }
+  },
+  "allProductionSizesValid": true,
+  "crewInitializerAbsent": true,
+  "sourceAdmissionConfirmed": false,
+  "publicDeploymentClaimed": false,
+  "validationMethod": "One complete suite against the final follow-up production sources; no combined historical test runs."
+}

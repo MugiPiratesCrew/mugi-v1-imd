@@ -4,16 +4,15 @@ pragma solidity ^0.8.26;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
-import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 interface IMugiCrewTokenHook {
     function beforeTokenTransfer(uint8 tokenId, address from, address to, uint256 amount) external;
     function afterTokenTransfer(uint8 tokenId, address from, address to, uint256 amount) external;
 }
 
-/// @notice Crew ERC-20 with immutable-after-initialization game authority. Fees
+/// @notice Crew ERC-20 with constructor-bound game authority. Fees
 /// live in the official pool hook, never in ERC-20 transfers.
-contract MugiCrewToken is IERC20, IERC20Metadata, IERC20Errors, Initializable {
+contract MugiCrewToken is IERC20, IERC20Metadata, IERC20Errors {
     string private _name;
     string private _symbol;
     address public hook;
@@ -30,21 +29,9 @@ contract MugiCrewToken is IERC20, IERC20Metadata, IERC20Errors, Initializable {
         _;
     }
 
-    constructor() {
-        _disableInitializers();
-    }
-
-    function initialize(string calldata name_, string calldata symbol_, uint8 characterId_, address hook_)
-        external
-        initializer
-    {
-        _initializeCrew(name_, symbol_, characterId_, hook_);
-    }
-
-    /// @dev Shared one-time setup for the clone route and constructor-initialized
-    /// full token deployments used by the IMD adapter. No public mint authority.
-    function _initializeCrew(string memory name_, string memory symbol_, uint8 characterId_, address hook_) internal {
-        if (hook != address(0)) revert InvalidCrewConfiguration();
+    /// @dev This IMD source tree contains only full token deployments. There is
+    /// no clone route or post-deployment token initialization entry point.
+    constructor(string memory name_, string memory symbol_, uint8 characterId_, address hook_) {
         if (hook_.code.length == 0 || characterId_ >= 10 || bytes(name_).length == 0 || bytes(symbol_).length == 0) {
             revert InvalidCrewConfiguration();
         }

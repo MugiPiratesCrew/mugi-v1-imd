@@ -1,10 +1,15 @@
 # Mugi V1 IMD source admission candidate
 
-This is the revised Foundry source for the Mugi V1 IMD submission. Source
-admission remains PENDING. The previous job
+This is an unsubmitted follow-up Foundry source candidate for Mugi V1 IMD. Source
+admission remains PENDING. Paid job
+`6a953f2f-d28d-46cc-91a4-f348efed5c10` reviews the earlier source pin
+`028d37769edce6e38324182b8909392a9852af16`; accepting its audit report does not
+accept deployment. The preceding job
 `a6715145-76db-498f-9ca9-a11ed38d82a8` was blocked without deploying contracts.
 See `docs/validation/vrf-stall-repair/RECOVERY.md` for the revised lifecycle and
-`docs/IMD_FINDINGS_RESPONSE.md` for the response to all nine findings.
+`docs/IMD_FINDINGS_RESPONSE.md` for the original findings response. The current
+follow-up repairs, complete owner-trust disclosures and unresolved platform-policy
+conflicts are recorded in `docs/IMD_FOLLOWUP_RESPONSE.md`.
 
 The proposed manifest records four factories. They permit owner-authorized later
 deployment of the Mugi hook, ten crew tokens, airdrop, VRF adapter, IMD verifier,

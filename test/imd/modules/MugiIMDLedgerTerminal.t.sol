@@ -59,17 +59,22 @@ contract MugiIMDLedgerTerminalTest is Test {
         assertEq(afterAliceEth, aliceEth);
         assertEq(afterBobEth, bobEth);
         assertEq(ledger.escrowBacking(9), backing);
+        uint256[10] memory eligibleBefore = _eligibleSupplies();
 
-        // Model the hook's migration reserve: only inventory above backing leaves.
+        // Migration to a non-excluded recipient must not create eligible supply.
         _mint(9, address(this), 100 ether);
         uint256 free = MugiTerminalLedgerToken(tokens[9]).balanceOf(address(this)) - ledger.escrowBacking(9);
-        _transfer(9, address(this), ENGINE, free);
+        _transfer(9, address(this), address(0xF00), free);
         assertEq(MugiTerminalLedgerToken(tokens[9]).balanceOf(address(this)), backing);
+        _assertEligibleSupplies(eligibleBefore);
         uint256 partialClaim = beforeAlice[9] / 2;
         assertEq(ledger.claimToken(ALICE, 9, partialClaim), partialClaim);
         _transfer(9, address(this), ALICE, partialClaim);
+        _assertEligibleSupplies(eligibleBefore);
         uint256[10] memory bobClaims = _claimAll(BOB);
+        _assertEligibleSupplies(eligibleBefore);
         uint256[10] memory aliceClaims = _claimAll(ALICE);
+        _assertEligibleSupplies(eligibleBefore);
         assertEq(bobClaims[9], beforeBob[9]);
         assertEq(aliceClaims[9] + partialClaim, beforeAlice[9]);
         assertEq(ledger.escrowBacking(9), backing - beforeAlice[9] - beforeBob[9]);
@@ -87,6 +92,7 @@ contract MugiIMDLedgerTerminalTest is Test {
         // Alice has 2/3 token of each live crew in lazy virtual accounting.
         // Bob and Carol each earned 1 ETH from the previous elimination.
         assertEq(ledger.reservedEth(), 2 ether);
+        uint256[10] memory eligibleBefore = _eligibleSupplies();
         ledger.emergencyFinalize(alive, 9 ether);
         (, uint256 aliceEth,) = ledger.previewAccount(ALICE);
         (, uint256 bobEth,) = ledger.previewAccount(BOB);
@@ -99,6 +105,7 @@ contract MugiIMDLedgerTerminalTest is Test {
         // Materializing tokens after the terminal snapshot must not create another ETH share.
         uint256[10] memory claimed = _claimAll(ALICE);
         assertGt(claimed[1], 0);
+        _assertEligibleSupplies(eligibleBefore);
         assertEq(ledger.claimEth(ALICE), aliceEth);
         assertEq(ledger.claimEth(ALICE), 0);
         assertEq(ledger.claimEth(BOB), bobEth);
@@ -108,6 +115,7 @@ contract MugiIMDLedgerTerminalTest is Test {
         // A post-snapshot protocol transfer synchronizes its recipient first.
         _mint(1, address(this), 100 ether);
         _transfer(1, address(this), address(0xF00), 100 ether);
+        _assertEligibleSupplies(eligibleBefore);
         (, uint256 lateRecipientEth,) = ledger.previewAccount(address(0xF00));
         assertEq(lateRecipientEth, 0);
     }
@@ -194,7 +202,9 @@ contract MugiIMDLedgerTerminalTest is Test {
         }
         for (uint8 i; i < rounds; ++i) {
             _eliminate(i, uint256(i + 1) * 10 ether);
+            uint256[10] memory liveSupply = _eligibleSupplies();
             _claimAll(ALICE);
+            _assertEligibleSupplies(liveSupply);
         }
         // At nine eliminations this uses the tenth and final bounded event slot.
         ledger.emergencyFinalize(alive, 10 ether);
@@ -209,7 +219,9 @@ contract MugiIMDLedgerTerminalTest is Test {
             assertEq(eagerEffective, lazyEffective);
         }
         uint256 reserve = ledger.reservedEth();
+        uint256[10] memory terminalSupply = _eligibleSupplies();
         _claimAll(BOB);
+        _assertEligibleSupplies(terminalSupply);
         assertEq(ledger.claimEth(ALICE), eagerEth);
         assertEq(ledger.claimEth(BOB), lazyEth);
         assertEq(ledger.reservedEth(), reserve - eagerEth - lazyEth);
@@ -230,6 +242,12 @@ contract MugiIMDLedgerTerminalTest is Test {
         (uint256[10] memory bobTokens, uint256 bobEth,) = ledger.previewAccount(BOB);
         assertGt(bobTokens[9], 0);
         assertGt(bobEth, 0);
+        (uint256[10] memory aliceTokens,,) = ledger.previewAccount(ALICE);
+        uint256[10] memory eligibleBefore = _eligibleSupplies();
+        uint256 materialized = ledger.claimToken(ALICE, 9, aliceTokens[9] / 2);
+        assertGt(materialized, 0);
+        _transfer(9, address(this), ALICE, materialized);
+        _assertEligibleSupplies(eligibleBefore);
         uint256 reserved = ledger.reservedEth();
         uint256[10] memory backing;
         for (uint8 i; i < 10; ++i) {
@@ -243,7 +261,12 @@ contract MugiIMDLedgerTerminalTest is Test {
             assertEq(ledger.escrowBacking(i), 0);
             assertEq(ledger.eligibleSupply(i), 0);
             if (expiredTokens[i] != 0) _burn(i, address(this), expiredTokens[i]);
+            assertEq(ledger.eligibleSupply(i), 0);
         }
+        // A late inventory handoff after expiry cannot revive eligible supply.
+        _mint(9, address(this), 1 ether);
+        _transfer(9, address(this), address(0xF00), 1 ether);
+        assertEq(ledger.eligibleSupply(9), 0);
         for (uint8 i; i < 2; ++i) {
             address account = i == 0 ? ALICE : BOB;
             (uint256[10] memory claimable, uint256 ethClaim, uint256[10] memory virtualScaled) =
@@ -262,6 +285,16 @@ contract MugiIMDLedgerTerminalTest is Test {
         }
         vm.expectRevert(MugiIMDLedger.InvalidClaim.selector);
         ledger.expireFinalClaims();
+    }
+
+    function _eligibleSupplies() private view returns (uint256[10] memory supplies) {
+        for (uint8 i; i < 10; ++i) supplies[i] = ledger.eligibleSupply(i);
+    }
+
+    function _assertEligibleSupplies(uint256[10] memory expected) private view {
+        for (uint8 i; i < 10; ++i) {
+            assertEq(ledger.eligibleSupply(i), expected[i], "claim must only move virtual supply to wallet");
+        }
     }
 
     function _eliminate(uint8 loser, uint256 reward) private {

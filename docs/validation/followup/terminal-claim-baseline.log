@@ -1,0 +1,20 @@
+Compiling 2 files with Solc 0.8.26
+Solc 0.8.26 finished in 20.51s
+Compiler run successful!
+2026-10-21T20:39:49.615180Z  WARN evm::traces::external: etherscan config not found
+
+Ran 2 tests for test/imd/modules/MugiIMDLedgerTerminal.t.sol:MugiIMDLedgerTerminalTest
+[FAIL: claim must only move virtual supply to wallet: 285380444160000000063417876480 != 348798320640000000000000000000] testEmergencyRewardsIncludeFrozenWalletAndVirtualBalancesAndEarlierEth() (gas: 2363466)
+[FAIL: claim must only move virtual supply to wallet: 545122713240000000074317824000 != 722557255140000000000000000000] testNormalFinalizePreservesSyncedAndLazyEscrowAndOnlyUnreservedInventoryCanLeave() (gas: 3969698)
+Suite result: FAILED. 0 passed; 2 failed; 0 skipped; finished in 10.98ms (11.83ms CPU time)
+
+Ran 1 test suite in 19.95ms (10.98ms CPU time): 0 tests passed, 2 failed, 0 skipped (2 total tests)
+
+Failing tests:
+Encountered 2 failing tests in test/imd/modules/MugiIMDLedgerTerminal.t.sol:MugiIMDLedgerTerminalTest
+[FAIL: claim must only move virtual supply to wallet: 285380444160000000063417876480 != 348798320640000000000000000000] testEmergencyRewardsIncludeFrozenWalletAndVirtualBalancesAndEarlierEth() (gas: 2363466)
+[FAIL: claim must only move virtual supply to wallet: 545122713240000000074317824000 != 722557255140000000000000000000] testNormalFinalizePreservesSyncedAndLazyEscrowAndOnlyUnreservedInventoryCanLeave() (gas: 3969698)
+
+Encountered a total of 2 failing tests, 0 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 2 failed tests

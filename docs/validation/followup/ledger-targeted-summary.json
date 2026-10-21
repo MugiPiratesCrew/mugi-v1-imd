@@ -1,0 +1,170 @@
+{
+  "counts": {
+    "Success": 14
+  },
+  "suites": 3,
+  "tests": [
+    {
+      "suite": "test/imd/modules/MugiIMDLedgerSeason.t.sol:MugiIMDLedgerSeasonTest",
+      "name": "testEachCrewBindingConstraintRejectsBeforeInitializationCanStick()",
+      "status": "Success",
+      "reason": null,
+      "kind": {
+        "Unit": {
+          "gas": 913988
+        }
+      }
+    },
+    {
+      "suite": "test/imd/modules/MugiIMDLedgerSeason.t.sol:MugiIMDLedgerSeasonTest",
+      "name": "testSeasonInitializationExcludesAllFiveProtocolAddressesAtomically()",
+      "status": "Success",
+      "reason": null,
+      "kind": {
+        "Unit": {
+          "gas": 1303172
+        }
+      }
+    },
+    {
+      "suite": "test/imd/modules/MugiIMDLedgerSecurity.t.sol:MugiIMDLedgerSecurityTest",
+      "name": "testAllLedgerMutatorsRejectOutsideCaller()",
+      "status": "Success",
+      "reason": null,
+      "kind": {
+        "Unit": {
+          "gas": 56796
+        }
+      }
+    },
+    {
+      "suite": "test/imd/modules/MugiIMDLedgerSecurity.t.sol:MugiIMDLedgerSecurityTest",
+      "name": "testCallBoundaryPreservesHookAndEngineInventoryExclusion()",
+      "status": "Success",
+      "reason": null,
+      "kind": {
+        "Unit": {
+          "gas": 198400
+        }
+      }
+    },
+    {
+      "suite": "test/imd/modules/MugiIMDLedgerSecurity.t.sol:MugiIMDLedgerSecurityTest",
+      "name": "testExcludedProtocolInventoryCannotCaptureEliminationRewards()",
+      "status": "Success",
+      "reason": null,
+      "kind": {
+        "Unit": {
+          "gas": 1000836
+        }
+      }
+    },
+    {
+      "suite": "test/imd/modules/MugiIMDLedgerSecurity.t.sol:MugiIMDLedgerSecurityTest",
+      "name": "testLedgerCannotReclassifyHookOrItsOwnAddressAsEligible()",
+      "status": "Success",
+      "reason": null,
+      "kind": {
+        "Unit": {
+          "gas": 19004
+        }
+      }
+    },
+    {
+      "suite": "test/imd/modules/MugiIMDLedgerTerminal.t.sol:MugiIMDLedgerTerminalTest",
+      "name": "testEmergencyAfterPriorEthWithdrawalExpiresOnlyRemainingMixedRights()",
+      "status": "Success",
+      "reason": null,
+      "kind": {
+        "Unit": {
+          "gas": 1859096
+        }
+      }
+    },
+    {
+      "suite": "test/imd/modules/MugiIMDLedgerTerminal.t.sol:MugiIMDLedgerTerminalTest",
+      "name": "testEmergencyExpirationCannotResurrectSyncedOrLazyClaims()",
+      "status": "Success",
+      "reason": null,
+      "kind": {
+        "Unit": {
+          "gas": 2235909
+        }
+      }
+    },
+    {
+      "suite": "test/imd/modules/MugiIMDLedgerTerminal.t.sol:MugiIMDLedgerTerminalTest",
+      "name": "testEmergencyRejectsWrongMaskAndCannotRecordAnotherTerminalOrRound()",
+      "status": "Success",
+      "reason": null,
+      "kind": {
+        "Unit": {
+          "gas": 293260
+        }
+      }
+    },
+    {
+      "suite": "test/imd/modules/MugiIMDLedgerTerminal.t.sol:MugiIMDLedgerTerminalTest",
+      "name": "testEmergencyRewardsIncludeFrozenWalletAndVirtualBalancesAndEarlierEth()",
+      "status": "Success",
+      "reason": null,
+      "kind": {
+        "Unit": {
+          "gas": 2762019
+        }
+      }
+    },
+    {
+      "suite": "test/imd/modules/MugiIMDLedgerTerminal.t.sol:MugiIMDLedgerTerminalTest",
+      "name": "testEmergencyUnallocatedCrewSharesAndRemaindersNeverEnterPlayerReserve()",
+      "status": "Success",
+      "reason": null,
+      "kind": {
+        "Unit": {
+          "gas": 1198245
+        }
+      }
+    },
+    {
+      "suite": "test/imd/modules/MugiIMDLedgerTerminal.t.sol:MugiIMDLedgerTerminalTest",
+      "name": "testExpirationCannotResurrectSyncedOrLazyClaimsInEitherTerminalMode()",
+      "status": "Success",
+      "reason": null,
+      "kind": {
+        "Unit": {
+          "gas": 2884021
+        }
+      }
+    },
+    {
+      "suite": "test/imd/modules/MugiIMDLedgerTerminal.t.sol:MugiIMDLedgerTerminalTest",
+      "name": "testFuzzEagerMaterializationAndLateSyncHaveIdenticalEmergencyRights(uint8,uint96)",
+      "status": "Success",
+      "reason": null,
+      "kind": {
+        "Fuzz": {
+          "first_case": {
+            "calldata": "0x3c7fee9900000000000000000000000000000000000000000000000000000000000000450000000000000000000000000000000000000000000000000000000000fe48a5",
+            "gas": 4514739,
+            "stipend": 21368
+          },
+          "runs": 256,
+          "mean_gas": 3869445,
+          "median_gas": 3874402,
+          "failed_corpus_replays": 0
+        }
+      }
+    },
+    {
+      "suite": "test/imd/modules/MugiIMDLedgerTerminal.t.sol:MugiIMDLedgerTerminalTest",
+      "name": "testNormalFinalizePreservesSyncedAndLazyEscrowAndOnlyUnreservedInventoryCanLeave()",
+      "status": "Success",
+      "reason": null,
+      "kind": {
+        "Unit": {
+          "gas": 3418685
+        }
+      }
+    }
+  ]
+}
