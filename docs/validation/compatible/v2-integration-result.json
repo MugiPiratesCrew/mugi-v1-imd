@@ -7,13 +7,15 @@
     "-vv"
   ],
   "exit_code": 0,
-  "finished_utc": "2026-10-21T22:46:37.188776+00:00",
+  "finished_utc": "2026-10-21T23:25:13.502Z",
   "tests_passed": 1,
   "tests_failed": 0,
   "tests_skipped": 0,
   "source_files_still_match": true,
   "changed_source_files": [],
   "source_files_checked": 28,
+  "compiler_source_files_checked": 116,
+  "all_compiler_source_hashes_match": true,
   "values_integer_base_units": {
     "V1 eliminations completed": "9",
     "V1 earned ETH retained before claims": "82222222222222213",
@@ -24,9 +26,10 @@
     "V1 Alice token claim after V2 trading": "466310530900955200195",
     "V1 Alice ETH claim after V2 trading": "2315197237425177"
   },
-  "scope": "Local real PoolManager; inherited VRF mock and deployCodeTo hook fixtures. No broadcast or admission claim.",
-  "source_manifest_sha256": "594a6d6cf2690e1fae23b176375669c10205ea7df95989b07dea4efced891ac1",
+  "hook_raw_creation_code_hash": "0x7161ccaa791cb35a95cb47bcdb62910259125bfa3766f76e37d178db68f108d2",
+  "scope": "Local real PoolManager; inherited VRF mock and deployCodeTo hook fixtures. Immutable real V2 receiver precommitted before V1 activation; non-owner triggers exact-target handoff. V2 configure/seed/launch/buy and old V1 claims tested. No broadcast or admission claim.",
+  "source_manifest_sha256": "26dc4a5635f4331a1896488316a551eb657f34af0c477b5cd17f81c6bac986fd",
   "source_identity_evidence": "v2-source-identities.json",
-  "original_local_source_manifest_sha256": "c175fd4174749f1eed9d7e31f7a500e9c6e72f46f4a80da890cc5251a971c980",
+  "original_local_source_manifest_sha256": "5812b3aab193bc36daef26988d9762ae60096c36a775118e0d0e006614c9b08e",
   "path_sanitization": "Absolute machine paths were replaced with source identities; Solidity hashes are unchanged."
 }

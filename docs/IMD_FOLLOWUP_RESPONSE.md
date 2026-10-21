@@ -1,3 +1,5 @@
+> Historical audit response for an earlier source revision. Current V2/treasury rules and fixes are in [IMD_COMPATIBLE_R2_RESPONSE.md](IMD_COMPATIBLE_R2_RESPONSE.md).
+
 # Follow-up IMD audit response, 21 October 2026
 
 > Historical response for candidate94d7836. The authorized compatibility redesign

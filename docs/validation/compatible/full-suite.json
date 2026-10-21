@@ -1,6 +1,6 @@
 {
   "test/imd/MugiIMDCrewToken.t.sol:MugiIMDCrewTokenTest": {
-    "duration": "1s 588ms 232\u00b5s 37ns",
+    "duration": "1s 541ms 152\u00b5s 125ns",
     "test_results": {
       "testBurnHistoryTracksMultipleTimestampsAndCoalescesSameTimestamp()": {
         "status": "Success",
@@ -15,7 +15,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "650\u00b5s 748ns",
+        "duration": "677\u00b5s 821ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -32,7 +32,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "275\u00b5s 107ns",
+        "duration": "276\u00b5s 258ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -49,7 +49,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "391\u00b5s 285ns",
+        "duration": "406\u00b5s 834ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -62,19 +62,19 @@
         "kind": {
           "Fuzz": {
             "first_case": {
-              "calldata": "0x394a18fb0000000000000000000000000000067a97f6eb14d3396aad3577da59f3df31e2000000000000000000000002564902da2f93fb841f14fea5326bfd71ba1ae367",
-              "gas": 76002,
-              "stipend": 21788
+              "calldata": "0x394a18fb0000000000000000000000000000000000000000000000000000000000001c660000000000000000000000000000000000000000000000000000000000004da5",
+              "gas": 75613,
+              "stipend": 21368
             },
             "runs": 256,
-            "mean_gas": 54243,
-            "median_gas": 54214,
+            "mean_gas": 54344,
+            "median_gas": 54245,
             "failed_corpus_replays": 0
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1s 585ms 720\u00b5s 158ns",
+        "duration": "1s 538ms 619\u00b5s 298ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -87,19 +87,19 @@
         "kind": {
           "Fuzz": {
             "first_case": {
-              "calldata": "0xfec25d7400000000000000000000000000000000000000000000000000000000a07a3551",
-              "gas": 1362057,
-              "stipend": 21240
+              "calldata": "0xfec25d740000000000000000000000000000000000000000000000000000000000000bb8",
+              "gas": 1483161,
+              "stipend": 21216
             },
             "runs": 256,
-            "mean_gas": 1233838,
-            "median_gas": 1281600,
+            "mean_gas": 1245567,
+            "median_gas": 1300395,
             "failed_corpus_replays": 0
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1s 488ms 112\u00b5s 131ns",
+        "duration": "1s 439ms 984\u00b5s 928ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -116,7 +116,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "251\u00b5s 437ns",
+        "duration": "415\u00b5s 883ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -133,7 +133,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "238\u00b5s 370ns",
+        "duration": "422\u00b5s 471ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -150,7 +150,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "61\u00b5s 918ns",
+        "duration": "236\u00b5s 916ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -167,7 +167,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "172\u00b5s 452ns",
+        "duration": "231\u00b5s 153ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -184,7 +184,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "187\u00b5s 196ns",
+        "duration": "288\u00b5s 386ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -201,7 +201,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "263\u00b5s 254ns",
+        "duration": "393\u00b5s 937ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -218,7 +218,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "2ms 218\u00b5s 553ns",
+        "duration": "3ms 87\u00b5s 547ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -235,7 +235,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "453\u00b5s 296ns",
+        "duration": "720\u00b5s 189ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -252,7 +252,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "251\u00b5s 732ns",
+        "duration": "433\u00b5s 675ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -269,7 +269,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "426\u00b5s 320ns",
+        "duration": "698\u00b5s 664ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -286,7 +286,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "201\u00b5s 930ns",
+        "duration": "315\u00b5s 764ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }
@@ -294,7 +294,7 @@
     "warnings": []
   },
   "test/imd/MugiIMDProjectFactoryFork.t.sol:MugiIMDProjectFactoryForkTest": {
-    "duration": "36s 806ms 917\u00b5s 493ns",
+    "duration": "33s 767ms 327\u00b5s 515ns",
     "test_results": {
       "testMainnetFactoryRecordsFourEntriesThenConstructorCompleteGraphSeedsTenPools()": {
         "status": "Success",
@@ -304,12 +304,86 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 46218157
+            "gas": 59562327
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "36s 803ms 288\u00b5s 933ns",
+        "duration": "33s 763ms 310\u00b5s 626ns",
+        "breakpoints": {},
+        "gas_snapshots": {}
+      }
+    },
+    "warnings": []
+  },
+  "test/imd/MugiTerminalConfiguration.t.sol:MugiTerminalConfigurationTest": {
+    "duration": "625ms 388\u00b5s 526ns",
+    "test_results": {
+      "testNonzeroFutureV2ContractCanBePinnedBeforeItsDeployment()": {
+        "status": "Success",
+        "reason": null,
+        "counterexample": null,
+        "logs": [],
+        "decoded_logs": [],
+        "kind": {
+          "Unit": {
+            "gas": 27082442
+          }
+        },
+        "traces": [],
+        "labeled_addresses": {},
+        "duration": "51ms 211\u00b5s 258ns",
+        "breakpoints": {},
+        "gas_snapshots": {}
+      },
+      "testOwnerCannotBeCommunityDestination()": {
+        "status": "Success",
+        "reason": null,
+        "counterexample": null,
+        "logs": [],
+        "decoded_logs": [],
+        "kind": {
+          "Unit": {
+            "gas": 41570662
+          }
+        },
+        "traces": [],
+        "labeled_addresses": {},
+        "duration": "398ms 490\u00b5s 106ns",
+        "breakpoints": {},
+        "gas_snapshots": {}
+      },
+      "testTeamCannotBeCommunityDestination()": {
+        "status": "Success",
+        "reason": null,
+        "counterexample": null,
+        "logs": [],
+        "decoded_logs": [],
+        "kind": {
+          "Unit": {
+            "gas": 22994743
+          }
+        },
+        "traces": [],
+        "labeled_addresses": {},
+        "duration": "83ms 739\u00b5s 934ns",
+        "breakpoints": {},
+        "gas_snapshots": {}
+      },
+      "testZeroV2ReceiverCannotCreateHook()": {
+        "status": "Success",
+        "reason": null,
+        "counterexample": null,
+        "logs": [],
+        "decoded_logs": [],
+        "kind": {
+          "Unit": {
+            "gas": 23132817
+          }
+        },
+        "traces": [],
+        "labeled_addresses": {},
+        "duration": "85ms 526\u00b5s 873ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }
@@ -317,7 +391,7 @@
     "warnings": []
   },
   "test/imd/MugiV1IMDDeploymentFactory.t.sol:MugiV1IMDDeploymentFactoryTest": {
-    "duration": "1s 9ms 849\u00b5s 497ns",
+    "duration": "993ms 40\u00b5s 197ns",
     "test_results": {
       "testCompleteConstructorGraphSeedsAllPoolsAndLaunchesWithoutInitializers()": {
         "status": "Success",
@@ -327,12 +401,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 42277861
+            "gas": 38472807
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "204ms 271\u00b5s 630ns",
+        "duration": "146ms 493\u00b5s 947ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -344,12 +418,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 15406626
+            "gas": 11425073
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "174ms 329\u00b5s 853ns",
+        "duration": "118ms 125\u00b5s 349ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -361,12 +435,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 52902780
+            "gas": 57182936
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "624ms 918\u00b5s 573ns",
+        "duration": "722ms 63\u00b5s 219ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -378,12 +452,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 34868874
+            "gas": 31104682
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "98ms 784\u00b5s 664ns",
+        "duration": "123ms 557\u00b5s 538ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -395,12 +469,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 84407
+            "gas": 86777
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "300\u00b5s 616ns",
+        "duration": "441\u00b5s 901ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -412,12 +486,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 12308336
+            "gas": 12315923
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 328\u00b5s 943ns",
+        "duration": "1ms 920\u00b5s 215ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -429,12 +503,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 20733754
+            "gas": 30895436
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "18ms 845\u00b5s 490ns",
+        "duration": "201ms 828\u00b5s 417ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -446,12 +520,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 23359336
+            "gas": 19359626
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "99ms 937\u00b5s 24ns",
+        "duration": "112ms 930\u00b5s 89ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -463,12 +537,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 34875210
+            "gas": 31068754
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "103ms 794\u00b5s 288ns",
+        "duration": "120ms 114\u00b5s 458ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -480,12 +554,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 34875144
+            "gas": 31068688
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "102ms 555\u00b5s 609ns",
+        "duration": "116ms 10\u00b5s 661ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -497,12 +571,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 35439935
+            "gas": 31610263
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "99ms 660\u00b5s 300ns",
+        "duration": "123ms 526\u00b5s 907ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -514,12 +588,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 10574768
+            "gas": 6582646
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "96ms 22\u00b5s 90ns",
+        "duration": "170ms 238\u00b5s 449ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }
@@ -527,7 +601,7 @@
     "warnings": []
   },
   "test/imd/lifecycle/MugiAdversarial.t.sol:MugiAdversarialTest": {
-    "duration": "224ms 827\u00b5s 987ns",
+    "duration": "397ms 524\u00b5s 188ns",
     "test_results": {
       "testEthRecipientCannotReenterAndWithdrawItsRewardTwice()": {
         "status": "Success",
@@ -537,12 +611,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 5016532
+            "gas": 5017148
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "18ms 355\u00b5s 558ns",
+        "duration": "18ms 543\u00b5s 260ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -554,12 +628,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 18094239
+            "gas": 18095128
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "81ms 917\u00b5s 222ns",
+        "duration": "98ms 197\u00b5s 722ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -571,12 +645,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 22008967
+            "gas": 22012356
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "72ms 473\u00b5s 146ns",
+        "duration": "122ms 358\u00b5s 836ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -588,12 +662,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 5018398
+            "gas": 5019058
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "10ms 641\u00b5s 136ns",
+        "duration": "18ms 512\u00b5s 243ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -605,12 +679,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 852368
+            "gas": 852830
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "4ms 146\u00b5s 804ns",
+        "duration": "4ms 155\u00b5s 820ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -622,12 +696,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 26371905
+            "gas": 26376805
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "37ms 441\u00b5s 687ns",
+        "duration": "37ms 818\u00b5s 30ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -639,12 +713,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 4718058
+            "gas": 4718674
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "16ms 971\u00b5s 933ns",
+        "duration": "16ms 990\u00b5s 607ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -656,12 +730,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 79599
+            "gas": 79775
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "506\u00b5s 395ns",
+        "duration": "548\u00b5s 777ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }
@@ -669,8 +743,25 @@
     "warnings": []
   },
   "test/imd/lifecycle/MugiCompatibilityHandoff.t.sol:MugiCompatibilityHandoffTest": {
-    "duration": "268ms 955\u00b5s 289ns",
+    "duration": "1s 402ms 798\u00b5s 809ns",
     "test_results": {
+      "testCommunityTreasuryCannotBecomeOwner()": {
+        "status": "Success",
+        "reason": null,
+        "counterexample": null,
+        "logs": [],
+        "decoded_logs": [],
+        "kind": {
+          "Unit": {
+            "gas": 41066
+          }
+        },
+        "traces": [],
+        "labeled_addresses": {},
+        "duration": "269\u00b5s 988ns",
+        "breakpoints": {},
+        "gas_snapshots": {}
+      },
       "testCutoffAndKnownLoserTransfersDoNotMoveOrDuplicateConversion()": {
         "status": "Success",
         "reason": null,
@@ -679,12 +770,63 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 5900689
+            "gas": 5901156
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "20ms 130\u00b5s 799ns",
+        "duration": "19ms 616\u00b5s 76ns",
+        "breakpoints": {},
+        "gas_snapshots": {}
+      },
+      "testExpiryBeforeFinaleFallbackCannotEraseMigrationDeadline()": {
+        "status": "Success",
+        "reason": null,
+        "counterexample": null,
+        "logs": [],
+        "decoded_logs": [],
+        "kind": {
+          "Unit": {
+            "gas": 19987123
+          }
+        },
+        "traces": [],
+        "labeled_addresses": {},
+        "duration": "102ms 99\u00b5s 611ns",
+        "breakpoints": {},
+        "gas_snapshots": {}
+      },
+      "testFinaleFallbackHasHardDeadlineAndPreservesReservedAssets()": {
+        "status": "Success",
+        "reason": null,
+        "counterexample": null,
+        "logs": [],
+        "decoded_logs": [],
+        "kind": {
+          "Unit": {
+            "gas": 20382541
+          }
+        },
+        "traces": [],
+        "labeled_addresses": {},
+        "duration": "106ms 415\u00b5s 232ns",
+        "breakpoints": {},
+        "gas_snapshots": {}
+      },
+      "testRejectingCommunityRollsBackFallbackAndAllowsPermissionlessRetry()": {
+        "status": "Success",
+        "reason": null,
+        "counterexample": null,
+        "logs": [],
+        "decoded_logs": [],
+        "kind": {
+          "Unit": {
+            "gas": 20065588
+          }
+        },
+        "traces": [],
+        "labeled_addresses": {},
+        "duration": "101ms 722\u00b5s 120ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -696,12 +838,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 20184340
+            "gas": 20049692
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "100ms 408\u00b5s 584ns",
+        "duration": "99ms 904\u00b5s 983ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -713,12 +855,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 20790053
+            "gas": 20799555
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "107ms 198\u00b5s 276ns",
+        "duration": "110ms 50\u00b5s 683ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }
@@ -726,7 +868,7 @@
     "warnings": []
   },
   "test/imd/lifecycle/MugiEconomics.t.sol:MugiEconomicsTest": {
-    "duration": "1m 41s 194ms 478\u00b5s 469ns",
+    "duration": "1m 46s 923ms 715\u00b5s 879ns",
     "test_results": {
       "testBuybackTwapExposesRealHistoryAndRejectsInvalidCrew()": {
         "status": "Success",
@@ -736,12 +878,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 431875
+            "gas": 432139
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 835\u00b5s 762ns",
+        "duration": "1ms 285\u00b5s 847ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -753,12 +895,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 5296002
+            "gas": 5297014
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "28ms 591\u00b5s 59ns",
+        "duration": "18ms 668\u00b5s 864ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -770,12 +912,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 18542864
+            "gas": 18544140
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "107ms 810\u00b5s 125ns",
+        "duration": "65ms 361\u00b5s 122ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -789,18 +931,18 @@
           "Fuzz": {
             "first_case": {
               "calldata": "0xb4c787120000000000000000000000000000000000000000000000000000000000000001",
-              "gas": 80303237,
+              "gas": 80635492,
               "stipend": 21204
             },
             "runs": 257,
-            "mean_gas": 75832237,
-            "median_gas": 75987248,
+            "mean_gas": 76635146,
+            "median_gas": 76687446,
             "failed_corpus_replays": 0
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1m 41s 14ms 415\u00b5s 546ns",
+        "duration": "1m 46s 802ms 753\u00b5s 580ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -812,12 +954,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 20178789
+            "gas": 20179678
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "72ms 402\u00b5s 789ns",
+        "duration": "122ms 73\u00b5s 357ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -829,12 +971,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 16863135
+            "gas": 16864024
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "54ms 10\u00b5s 563ns",
+        "duration": "101ms 417\u00b5s 844ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }
@@ -842,7 +984,7 @@
     "warnings": []
   },
   "test/imd/lifecycle/MugiGameHook.t.sol:MugiGameHookTest": {
-    "duration": "240ms 470\u00b5s 454ns",
+    "duration": "274ms 945\u00b5s 103ns",
     "test_results": {
       "testAirdropRemainderRetiresAfterDeadline()": {
         "status": "Success",
@@ -852,12 +994,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 820234
+            "gas": 820278
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "685\u00b5s 769ns",
+        "duration": "1ms 344\u00b5s 924ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -869,12 +1011,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 880384
+            "gas": 880956
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "3ms 900\u00b5s 184ns",
+        "duration": "6ms 999\u00b5s 756ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -886,12 +1028,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 5190342
+            "gas": 5191310
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "12ms 909\u00b5s 231ns",
+        "duration": "21ms 6\u00b5s 4ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -903,12 +1045,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 7056008
+            "gas": 7056756
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "18ms 665\u00b5s 978ns",
+        "duration": "19ms 535\u00b5s 811ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -920,12 +1062,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 1038865
+            "gas": 1038953
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "554\u00b5s 381ns",
+        "duration": "614\u00b5s 51ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -937,12 +1079,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 17286060
+            "gas": 17288464
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "56ms 104\u00b5s 985ns",
+        "duration": "52ms 548\u00b5s 286ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -954,12 +1096,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 288637
+            "gas": 288681
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "811\u00b5s 437ns",
+        "duration": "512\u00b5s 934ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -971,12 +1113,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 23653909
+            "gas": 23658952
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "76ms 666\u00b5s 306ns",
+        "duration": "80ms 815\u00b5s 366ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -988,12 +1130,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 236525
+            "gas": 237097
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "668\u00b5s 680ns",
+        "duration": "700\u00b5s 176ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1010,7 +1152,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "29\u00b5s 233ns",
+        "duration": "35\u00b5s 136ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1022,12 +1164,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 838268
+            "gas": 838906
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "2ms 536\u00b5s 686ns",
+        "duration": "2ms 568\u00b5s 741ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1039,12 +1181,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 19233180
+            "gas": 19237282
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "5ms 320\u00b5s 415ns",
+        "duration": "5ms 252\u00b5s 467ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1056,12 +1198,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 4839323
+            "gas": 4839719
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "10ms 404\u00b5s 885ns",
+        "duration": "11ms 197\u00b5s 357ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1073,12 +1215,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 156391
+            "gas": 156655
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "309\u00b5s 502ns",
+        "duration": "318\u00b5s 417ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1090,12 +1232,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 4588284
+            "gas": 4588944
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "10ms 954\u00b5s 165ns",
+        "duration": "11ms 121\u00b5s 301ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1107,12 +1249,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 5936638
+            "gas": 5938310
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "12ms 652\u00b5s 352ns",
+        "duration": "12ms 916\u00b5s 160ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1124,12 +1266,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 979170
+            "gas": 979742
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "2ms 658\u00b5s 941ns",
+        "duration": "3ms 146\u00b5s 711ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1141,12 +1283,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 168171
+            "gas": 168303
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "309\u00b5s 101ns",
+        "duration": "329\u00b5s 795ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }
@@ -1154,7 +1296,7 @@
     "warnings": []
   },
   "test/imd/lifecycle/MugiGameHookMainnetFork.t.sol:MugiGameHookMainnetForkTest": {
-    "duration": "45s 497ms 815\u00b5s 615ns",
+    "duration": "1s 39ms 922\u00b5s 141ns",
     "test_results": {
       "testMainnetPoolManagerFullSeasonFinale()": {
         "status": "Success",
@@ -1164,12 +1306,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 18102237
+            "gas": 18103196
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "5s 415ms 877\u00b5s 238ns",
+        "duration": "116ms 93\u00b5s 147ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1181,12 +1323,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 5203889
+            "gas": 5204725
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "2s 100ms 709\u00b5s 394ns",
+        "duration": "22ms 505\u00b5s 352ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }
@@ -1194,7 +1336,7 @@
     "warnings": []
   },
   "test/imd/lifecycle/MugiStallRecovery.t.sol:MugiFinaleRightsTest": {
-    "duration": "139ms 432\u00b5s 886ns",
+    "duration": "137ms 923\u00b5s 798ns",
     "test_results": {
       "testCommittedV2TargetAndOneShotMigrationReserveUnclaimedTokens()": {
         "status": "Success",
@@ -1204,12 +1346,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 17681865
+            "gas": 17680919
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "98ms 233\u00b5s 866ns",
+        "duration": "93ms 105\u00b5s 742ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1221,12 +1363,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 98062
+            "gas": 98106
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "212\u00b5s 275ns",
+        "duration": "184\u00b5s 224ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1238,12 +1380,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 383567
+            "gas": 383699
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 513\u00b5s 123ns",
+        "duration": "1ms 467\u00b5s 239ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }
@@ -1251,7 +1393,7 @@
     "warnings": []
   },
   "test/imd/lifecycle/MugiStallRecovery.t.sol:MugiStallRecoveryTest": {
-    "duration": "146ms 936\u00b5s 534ns",
+    "duration": "146ms 654\u00b5s 712ns",
     "test_results": {
       "testConfiguredCallbackBudgetStoresTimeAndDeliversValidZeroWord()": {
         "status": "Success",
@@ -1261,12 +1403,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 156789
+            "gas": 156921
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "436\u00b5s 96ns",
+        "duration": "455\u00b5s 331ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1278,12 +1420,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 3045378
+            "gas": 3045589
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "10ms 160\u00b5s 520ns",
+        "duration": "10ms 107\u00b5s 10ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1295,12 +1437,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 3071005
+            "gas": 3071287
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "10ms 164\u00b5s 424ns",
+        "duration": "10ms 152\u00b5s 249ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1312,12 +1454,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 2918306
+            "gas": 2918412
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "9ms 793\u00b5s 402ns",
+        "duration": "9ms 717\u00b5s 935ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1329,12 +1471,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 3839422
+            "gas": 3839818
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "14ms 340\u00b5s 739ns",
+        "duration": "14ms 357\u00b5s 324ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1346,12 +1488,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 7974891
+            "gas": 7975419
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "29ms 421\u00b5s 492ns",
+        "duration": "29ms 430\u00b5s 532ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1363,12 +1505,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 3041732
+            "gas": 3042331
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "10ms 620\u00b5s 948ns",
+        "duration": "10ms 603\u00b5s 376ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1380,12 +1522,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 3355653
+            "gas": 3355296
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "12ms 864\u00b5s 219ns",
+        "duration": "12ms 749\u00b5s 686ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1397,12 +1539,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 3061739
+            "gas": 3061950
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "10ms 68\u00b5s 833ns",
+        "duration": "10ms 16\u00b5s 612ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }
@@ -1410,7 +1552,7 @@
     "warnings": []
   },
   "test/imd/lifecycle/MugiSwapRouter.t.sol:MugiSwapRouterTest": {
-    "duration": "585ms 79\u00b5s 313ns",
+    "duration": "669ms 471\u00b5s 194ns",
     "test_results": {
       "testBuyAndSellRejectExpiredDeadlines()": {
         "status": "Success",
@@ -1425,7 +1567,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "128\u00b5s 426ns",
+        "duration": "146\u00b5s 568ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1437,12 +1579,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 325128
+            "gas": 325260
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "939\u00b5s 624ns",
+        "duration": "908\u00b5s 982ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1454,12 +1596,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 673749
+            "gas": 674233
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 893\u00b5s 786ns",
+        "duration": "1ms 881\u00b5s 481ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1471,12 +1613,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 647682
+            "gas": 647726
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 47\u00b5s 90ns",
+        "duration": "1ms 48\u00b5s 481ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1488,12 +1630,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 419507
+            "gas": 419595
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 502\u00b5s 853ns",
+        "duration": "1ms 575\u00b5s 947ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1506,19 +1648,19 @@
         "kind": {
           "Fuzz": {
             "first_case": {
-              "calldata": "0x12603f7000000000000000000000000000000000000000000000001197a4e563fa5089c8",
-              "gas": 650409,
+              "calldata": "0x12603f700000000000000000000000000000000000000000000000960b534752ec96944d",
+              "gas": 650689,
               "stipend": 21300
             },
             "runs": 256,
-            "mean_gas": 628705,
-            "median_gas": 628999,
+            "mean_gas": 628986,
+            "median_gas": 629307,
             "failed_corpus_replays": 0
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "555ms 420\u00b5s 127ns",
+        "duration": "627ms 534\u00b5s 284ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1530,12 +1672,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 4694054
+            "gas": 4694406
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "10ms 301\u00b5s 96ns",
+        "duration": "12ms 21\u00b5s 537ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1547,12 +1689,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 737320
+            "gas": 737364
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 73\u00b5s 889ns",
+        "duration": "1ms 641\u00b5s 10ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1569,7 +1711,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "225\u00b5s 519ns",
+        "duration": "405\u00b5s 650ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1581,12 +1723,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 650366
+            "gas": 650454
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 487\u00b5s 519ns",
+        "duration": "4ms 213\u00b5s 346ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1598,12 +1740,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 629539
+            "gas": 629979
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 801\u00b5s 608ns",
+        "duration": "3ms 192\u00b5s 645ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1615,12 +1757,12 @@
         "decoded_logs": [],
         "kind": {
           "Unit": {
-            "gas": 349026
+            "gas": 349070
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "835\u00b5s 926ns",
+        "duration": "1ms 334\u00b5s 561ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1637,7 +1779,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "210\u00b5s 308ns",
+        "duration": "336\u00b5s 647ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1654,7 +1796,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "112\u00b5s 186ns",
+        "duration": "169\u00b5s 28ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }
@@ -1662,7 +1804,7 @@
     "warnings": []
   },
   "test/imd/modules/MugiIMDEngineSecurity.t.sol:MugiIMDEngineSecurityTest": {
-    "duration": "12ms 546\u00b5s 460ns",
+    "duration": "13ms 13\u00b5s 424ns",
     "test_results": {
       "testAllEconomicMutatorsRejectNonHookCaller()": {
         "status": "Success",
@@ -1677,7 +1819,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "251\u00b5s 141ns",
+        "duration": "229\u00b5s 589ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1694,7 +1836,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "127\u00b5s 362ns",
+        "duration": "125\u00b5s 875ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1711,7 +1853,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "570\u00b5s 155ns",
+        "duration": "443\u00b5s 301ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1728,7 +1870,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 281\u00b5s 371ns",
+        "duration": "1ms 102\u00b5s 647ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1745,7 +1887,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "2ms 36\u00b5s 185ns",
+        "duration": "1ms 975\u00b5s 228ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1762,7 +1904,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 336\u00b5s 162ns",
+        "duration": "3ms 127\u00b5s 678ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1779,7 +1921,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 987\u00b5s 477ns",
+        "duration": "1ms 868\u00b5s 403ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1796,7 +1938,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 376\u00b5s 951ns",
+        "duration": "1ms 314\u00b5s 925ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }
@@ -1804,7 +1946,7 @@
     "warnings": []
   },
   "test/imd/modules/MugiIMDLedgerSeason.t.sol:MugiIMDLedgerSeasonTest": {
-    "duration": "10ms 448\u00b5s 871ns",
+    "duration": "10ms 245\u00b5s 677ns",
     "test_results": {
       "testConstructorFixesAllProtocolExclusionsWithoutInitialization()": {
         "status": "Success",
@@ -1819,7 +1961,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "3ms 785\u00b5s 758ns",
+        "duration": "3ms 654\u00b5s 961ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1836,7 +1978,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 194\u00b5s 856ns",
+        "duration": "1ms 158\u00b5s 351ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1853,7 +1995,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "602\u00b5s 730ns",
+        "duration": "577\u00b5s 635ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1870,7 +2012,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "2ms 763\u00b5s 385ns",
+        "duration": "2ms 692\u00b5s 824ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }
@@ -1878,7 +2020,7 @@
     "warnings": []
   },
   "test/imd/modules/MugiIMDLedgerSecurity.t.sol:MugiIMDLedgerSecurityTest": {
-    "duration": "22ms 754\u00b5s 349ns",
+    "duration": "27ms 535\u00b5s 889ns",
     "test_results": {
       "testAllRemainingLedgerMutatorsRejectOutsideCaller()": {
         "status": "Success",
@@ -1893,7 +2035,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "272\u00b5s 473ns",
+        "duration": "277\u00b5s 284ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1910,7 +2052,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "5ms 166\u00b5s 962ns",
+        "duration": "5ms 845\u00b5s 579ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1927,7 +2069,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "3ms 788\u00b5s 361ns",
+        "duration": "3ms 878\u00b5s 697ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1944,7 +2086,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "5ms 125\u00b5s 745ns",
+        "duration": "7ms 102\u00b5s 144ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1961,7 +2103,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 76\u00b5s 762ns",
+        "duration": "1ms 142\u00b5s 59ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1978,7 +2120,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "126\u00b5s 251ns",
+        "duration": "130\u00b5s 90ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -1995,7 +2137,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "5ms 166\u00b5s 678ns",
+        "duration": "5ms 534\u00b5s 289ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }
@@ -2003,7 +2145,7 @@
     "warnings": []
   },
   "test/imd/modules/MugiIMDLedgerSnapshots.t.sol:MugiIMDLedgerSnapshotsTest": {
-    "duration": "676ms 332\u00b5s 541ns",
+    "duration": "1s 62ms 346\u00b5s 317ns",
     "test_results": {
       "testCutoffTransfersBurnsAndKnownLoserSalesCannotMovePastRewardsOrConversion()": {
         "status": "Success",
@@ -2018,7 +2160,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "8ms 816\u00b5s 260ns",
+        "duration": "9ms 646\u00b5s 885ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2035,7 +2177,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "9ms 627\u00b5s 813ns",
+        "duration": "9ms 976\u00b5s 208ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2048,19 +2190,19 @@
         "kind": {
           "Fuzz": {
             "first_case": {
-              "calldata": "0x4de7a73100000000000000000000000000000000000000000000000000000000000017c70000000000000000000000000000000000000000000000000000000000000b00",
-              "gas": 3369618,
-              "stipend": 21356
+              "calldata": "0x4de7a731000000000000000000000000000000000000000000000000000000000000003a000000000000000000000000000000000000000003a10db3ba3d8c8d53ece3f3",
+              "gas": 3370065,
+              "stipend": 21476
             },
             "runs": 256,
-            "mean_gas": 3345483,
+            "mean_gas": 3346575,
             "median_gas": 3348504,
             "failed_corpus_replays": 0
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "655ms 193\u00b5s 366ns",
+        "duration": "1s 39ms 616\u00b5s 716ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2077,7 +2219,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "17ms 105\u00b5s 814ns",
+        "duration": "12ms 586\u00b5s 632ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2094,7 +2236,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "3ms 578\u00b5s 64ns",
+        "duration": "3ms 673\u00b5s 623ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }
@@ -2102,7 +2244,7 @@
     "warnings": []
   },
   "test/imd/modules/MugiIMDLedgerTerminal.t.sol:MugiIMDLedgerTerminalTest": {
-    "duration": "4s 755ms 960\u00b5s 483ns",
+    "duration": "4s 993ms 137\u00b5s 284ns",
     "test_results": {
       "testEmergencyAfterPriorEthWithdrawalExpiresOnlyRemainingMixedRights()": {
         "status": "Success",
@@ -2117,7 +2259,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "8ms 293\u00b5s 716ns",
+        "duration": "9ms 304\u00b5s 472ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2134,7 +2276,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "13ms 682\u00b5s 638ns",
+        "duration": "14ms 62\u00b5s 147ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2151,7 +2293,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "2ms 186\u00b5s 50ns",
+        "duration": "3ms 3\u00b5s 34ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2168,7 +2310,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "11ms 453\u00b5s 945ns",
+        "duration": "11ms 317\u00b5s 487ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2185,7 +2327,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "3ms 389\u00b5s 903ns",
+        "duration": "4ms 695\u00b5s 75ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2202,7 +2344,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "23ms 276\u00b5s 31ns",
+        "duration": "23ms 111\u00b5s 564ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2215,19 +2357,19 @@
         "kind": {
           "Fuzz": {
             "first_case": {
-              "calldata": "0x3c7fee990000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000aadc96a",
-              "gas": 10970413,
-              "stipend": 21380
+              "calldata": "0x3c7fee9900000000000000000000000000000000000000000000000000000000000000070000000000000000000000000000000000000000000000000000000000002d5c",
+              "gas": 17410362,
+              "stipend": 21356
             },
             "runs": 256,
-            "mean_gas": 12819555,
-            "median_gas": 12736660,
+            "mean_gas": 13138891,
+            "median_gas": 12736777,
             "failed_corpus_replays": 0
           }
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "4s 691ms 274\u00b5s 581ns",
+        "duration": "4s 925ms 304\u00b5s 535ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2244,7 +2386,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "29ms 375\u00b5s 895ns",
+        "duration": "39ms 623\u00b5s 82ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }
@@ -2252,7 +2394,7 @@
     "warnings": []
   },
   "test/imd/modules/MugiIMDStateModules.t.sol:MugiIMDStateModulesTest": {
-    "duration": "2ms 431\u00b5s 150ns",
+    "duration": "3ms 877\u00b5s 914ns",
     "test_results": {
       "testAllBudgetMutatorsRequireHook()": {
         "status": "Success",
@@ -2267,7 +2409,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "125\u00b5s 485ns",
+        "duration": "176\u00b5s 156ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2284,7 +2426,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "430\u00b5s 870ns",
+        "duration": "747\u00b5s 301ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2301,7 +2443,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "554\u00b5s 551ns",
+        "duration": "982\u00b5s 400ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2318,7 +2460,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "207\u00b5s 501ns",
+        "duration": "353\u00b5s 859ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2335,7 +2477,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "112\u00b5s 896ns",
+        "duration": "194\u00b5s 540ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2352,7 +2494,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "160\u00b5s 864ns",
+        "duration": "264\u00b5s 825ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2369,7 +2511,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "140\u00b5s 234ns",
+        "duration": "231\u00b5s 262ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }
@@ -2377,7 +2519,7 @@
     "warnings": []
   },
   "test/imd/modules/MugiIMDVerifier.t.sol:MugiIMDVerifierTest": {
-    "duration": "22ms 657\u00b5s 307ns",
+    "duration": "20ms 781\u00b5s 95ns",
     "test_results": {
       "testCanonicalIMDProtocolDigestAndSignatureVector()": {
         "status": "Success",
@@ -2392,7 +2534,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "702\u00b5s 892ns",
+        "duration": "465\u00b5s 242ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2409,7 +2551,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 452\u00b5s 954ns",
+        "duration": "703\u00b5s 745ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2426,7 +2568,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "2ms 631\u00b5s 345ns",
+        "duration": "2ms 599\u00b5s 896ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2443,7 +2585,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "2ms 749\u00b5s 702ns",
+        "duration": "2ms 628\u00b5s 924ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2460,7 +2602,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "104\u00b5s 291ns",
+        "duration": "80\u00b5s 357ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2477,7 +2619,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "2ms 231\u00b5s 651ns",
+        "duration": "2ms 109\u00b5s 997ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2494,7 +2636,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "3ms 540\u00b5s 827ns",
+        "duration": "3ms 205\u00b5s 102ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2511,7 +2653,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "735\u00b5s 327ns",
+        "duration": "737\u00b5s 651ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2528,7 +2670,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "975\u00b5s 730ns",
+        "duration": "919\u00b5s 697ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2545,7 +2687,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "950\u00b5s 758ns",
+        "duration": "918\u00b5s 272ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2562,7 +2704,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "2ms 623\u00b5s 733ns",
+        "duration": "2ms 573\u00b5s 421ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2579,7 +2721,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 388\u00b5s 786ns",
+        "duration": "1ms 360\u00b5s 820ns",
         "breakpoints": {},
         "gas_snapshots": {}
       },
@@ -2596,7 +2738,7 @@
         },
         "traces": [],
         "labeled_addresses": {},
-        "duration": "1ms 441\u00b5s 971ns",
+        "duration": "1ms 382\u00b5s 657ns",
         "breakpoints": {},
         "gas_snapshots": {}
       }

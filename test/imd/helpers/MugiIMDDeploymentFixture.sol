@@ -36,7 +36,7 @@ abstract contract MugiIMDDeploymentFixture is Test {
         MugiV1IMDDeploymentFactory.Modules memory modules = factory.predictModules();
         c = MugiGameHook.Configuration({
             owner: OWNER, manager: address(manager), team: TEAM, community: COMMUNITY,
-            v2MigrationTarget: address(0), initialSupply: SUPPLY,
+            v2MigrationTarget: address(this), initialSupply: SUPPLY,
             ledger: address(accounting.ledger), engine: engineFactory.predictEngine(),
             budgets: address(accounting.budgets), prices: address(accounting.prices),
             randomnessProvider: modules.vrf, imdVerifier: modules.imdVerifier,

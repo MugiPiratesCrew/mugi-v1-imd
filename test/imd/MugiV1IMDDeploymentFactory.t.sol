@@ -44,11 +44,14 @@ contract MugiV1IMDDeploymentFactoryTest is MugiIMDDeploymentFixture {
         uint256 start = gasleft();
         _newFactories();
         uint256 execution = start - gasleft();
-        uint256 calldataUpperBound = 16 * (type(MugiIMDCrewFactory).creationCode.length
+        uint256 calldataBytes = type(MugiIMDCrewFactory).creationCode.length
             + type(MugiIMDAccountingFactory).creationCode.length + type(MugiIMDEngineFactory).creationCode.length
-            + type(MugiV1IMDDeploymentFactory).creationCode.length + 4 * 32);
-        emit log_named_uint("Four factory creation execution gas", execution);
-        assertLt(execution + calldataUpperBound + 100_000, 16_777_216);
+            + type(MugiV1IMDDeploymentFactory).creationCode.length + 4 * 32 + 4096;
+        uint256 runtimeBytes = address(crewFactory).code.length + address(factory).code.length
+            + address(accountingFactory).code.length + address(engineFactory).code.length;
+        // This is a local creation bound with explicit ABI/registry allowance;
+        // the exact IMD launchContracts transaction also needs RPC simulation.
+        _assertTransactionGas("Four factory creation bound", execution, calldataBytes, runtimeBytes, 4, 1_000_000);
     }
 
     function testEveryDescendantCreationCallFitsSeparateTransactionGasCap() public {
@@ -60,26 +63,53 @@ contract MugiV1IMDDeploymentFactoryTest is MugiIMDDeploymentFixture {
         vm.startPrank(OWNER);
         uint256 start = gasleft();
         factory.deployModules(salt, keccak256(code), moduleConfig);
-        _assertTransactionGas("Four service module creations", start - gasleft(), 4 + 16 * 32);
+        uint256 execution = start - gasleft();
+        uint256 runtimeBytes = address(factory.router()).code.length + address(factory.vrf()).code.length
+            + address(factory.imdVerifier()).code.length + address(factory.airdrop()).code.length;
+        _assertTransactionGas("Four service module creations", execution, 4 + 16 * 32, runtimeBytes, 4, 100_000);
         start = gasleft();
         crewFactory.deployCrewSet(futureHook, SUPPLY);
-        _assertTransactionGas("Ten crew token creations", start - gasleft(), 4 + 2 * 32);
+        execution = start - gasleft();
+        runtimeBytes = 0;
+        for (uint256 i; i < 10; ++i) runtimeBytes += crewFactory.tokens(i).code.length;
+        _assertTransactionGas("Ten crew token creations", execution, 4 + 2 * 32, runtimeBytes, 10, 100_000);
         start = gasleft();
         engineFactory.deployForHook(futureHook, manager);
-        _assertTransactionGas("Engine creation", start - gasleft(), 4 + 2 * 32);
+        execution = start - gasleft();
+        _assertTransactionGas("Engine creation", execution, 4 + 2 * 32, address(engineFactory.engine()).code.length, 1, 100_000);
         start = gasleft();
         accountingFactory.deployForHook(ledgerConfig);
-        _assertTransactionGas("Three accounting module creations", start - gasleft(), 4 + 16 * 32);
+        execution = start - gasleft();
+        MugiIMDAccountingFactory.Modules memory accounting = accountingFactory.predictModules();
+        runtimeBytes = address(accounting.ledger).code.length + address(accounting.budgets).code.length
+            + address(accounting.prices).code.length;
+        _assertTransactionGas("Three accounting module creations", execution, 4 + 16 * 32, runtimeBytes, 3, 100_000);
         start = gasleft();
         factory.deployHook(code);
-        _assertTransactionGas("Hook creation", start - gasleft(), 4 + 2 * 32 + code.length + 32);
+        execution = start - gasleft();
+        _assertTransactionGas("Hook creation", execution, 4 + 2 * 32 + code.length + 32, futureHook.code.length, 1, 100_000);
         vm.stopPrank();
     }
 
-    function _assertTransactionGas(string memory label, uint256 execution, uint256 calldataBytes) private {
+    function _assertTransactionGas(string memory label, uint256 execution, uint256 calldataBytes,
+        uint256 runtimeBytes, uint256 createdContracts, uint256 overheadAllowance) private
+    {
+        uint256 codeDeposit = 200 * runtimeBytes;
+        // gasleft around real CREATE includes code deposit. Fail explicitly if
+        // a test runner's instrumentation omits it; never accept a tiny trace
+        // instruction count as total creation gas or add the deposit twice.
+        assertGe(execution, codeDeposit, "creation meter omitted runtime code-deposit gas");
+        uint256 otherCreationGas = execution - codeDeposit;
+        // Add the maximum EIP-3860 (2 gas/word) plus CREATE2 hash (6 gas/word)
+        // cost for each EIP-3860-sized initcode even though CREATE gasleft also
+        // normally includes it. This deliberately overcounts for headroom.
+        uint256 initcodeUpperBound = createdContracts * 8 * ((uint256(49_152) + 31) / 32);
+        uint256 totalBound = codeDeposit + otherCreationGas + initcodeUpperBound
+            + 21_000 + 16 * calldataBytes + overheadAllowance;
         emit log_named_uint(label, execution);
-        // Treat every calldata byte as nonzero and leave additional overhead.
-        assertLt(execution + 21_000 + 16 * calldataBytes + 100_000, 16_777_216);
+        emit log_named_uint("Runtime code-deposit component", codeDeposit);
+        emit log_named_uint("Conservative independent-transaction bound", totalBound);
+        assertLt(totalBound, 16_777_216);
     }
 
     function testUnauthorizedCallersCannotConsumeAnyPredictedAddress() public {

@@ -1,3 +1,5 @@
+> Historical audit response for an earlier source revision. Current V2/treasury rules and fixes are in [IMD_COMPATIBLE_R2_RESPONSE.md](IMD_COMPATIBLE_R2_RESPONSE.md).
+
 # Response to IMD audit, 21 October 2026
 
 Historical response for source `028d37769edce6e38324182b8909392a9852af16`.

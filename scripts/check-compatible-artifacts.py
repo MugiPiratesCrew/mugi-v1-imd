@@ -254,7 +254,7 @@ def main():
             "Constructor premint reserve is not circulating supply; deterministic reserve releases remain part of V1 economics.",
             "Official-pool lifecycle gates remain, but crew ERC20 holder transfers have no lifecycle freeze or owner pause.",
             "Hook poolManager.mint creates Uniswap ERC6909 native-fee claims, not additional crew ERC20 supply.",
-            "Owner seeding, prelaunch abort refund, ownership transfer, manual one-shot V2 handoff, and verifier request pin/revoke remain disclosed authority.",
+            "Owner seeding, prelaunch abort refund, ownership transfer, and verifier request pin/revoke remain disclosed authority. V2 handoff is permissionless to the constructor-pinned receiver, with a fixed community fallback after 30 days.",
             "This report performs no network reads, public deployment, payment, explorer source verification or IMD admission.",
         ],
     }

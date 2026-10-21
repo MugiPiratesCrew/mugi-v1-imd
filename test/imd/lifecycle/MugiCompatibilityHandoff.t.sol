@@ -23,14 +23,20 @@ contract HandoffReceiver {
     }
 }
 
+contract RejectFinaleEther {
+    receive() external payable { revert("treasury rejected"); }
+}
+
 contract MugiCompatibilityHandoffTest is MugiGameTestBase {
+    HandoffReceiver private receiver;
+
     function setUp() public {
         vm.warp(1_800_000_000);
+        receiver = new HandoffReceiver();
         _setup(new PoolManager(address(this)));
     }
 
-    // The production constructor may leave V2 unselected until its code exists.
-    function _migrationTarget() internal pure override returns (address) { return address(0); }
+    function _migrationTarget() internal view override returns (address) { return address(receiver); }
 
     function testCutoffAndKnownLoserTransfersDoNotMoveOrDuplicateConversion() public {
         _fundTreasure(0);
@@ -81,7 +87,6 @@ contract MugiCompatibilityHandoffTest is MugiGameTestBase {
 
     function testV2HandoffPreservesPlayerEthAndTokensAndRetiresUnusedSupply() public {
         _finishSeason();
-        HandoffReceiver receiver = new HandoffReceiver();
         uint256 ethReserved = game.reservedPlayerEth();
         uint256 tokenReserved = game.escrowBacking(9);
         uint256 eligible = game.eligibleSupply(9);
@@ -90,9 +95,10 @@ contract MugiCompatibilityHandoffTest is MugiGameTestBase {
         (uint256[10] memory beforeTokens, uint256 beforeEth,) = game.previewAccount(ALICE);
         assertGt(beforeTokens[9], 0);
         assertGt(beforeEth, 0);
+        address wrongTarget = address(new HandoffReceiver());
+        vm.expectRevert(MugiIMDGameHook.InvalidState.selector);
+        game.migrateToV2(wrongTarget);
         vm.prank(BOB);
-        vm.expectRevert(MugiIMDGameHook.Unauthorized.selector);
-        game.migrateToV2(address(receiver));
         game.migrateToV2(address(receiver));
         assertTrue(game.migrated());
         assertEq(receiver.receivedCrew(), 9);
@@ -117,7 +123,6 @@ contract MugiCompatibilityHandoffTest is MugiGameTestBase {
 
     function testRejectingV2ReceiverRollsBackAllTransfersAndAllowsRetry() public {
         _finishSeason();
-        HandoffReceiver receiver = new HandoffReceiver();
         receiver.setReject(true);
         uint256 ethBefore = address(game).balance;
         uint256 tokensBefore = MugiCrewToken(crew[9]).balanceOf(address(game));
@@ -131,5 +136,101 @@ contract MugiCompatibilityHandoffTest is MugiGameTestBase {
         game.migrateToV2(address(receiver));
         assertTrue(game.migrated());
         _assertSolvent();
+    }
+
+    function testFinaleFallbackHasHardDeadlineAndPreservesReservedAssets() public {
+        _finishSeason();
+        uint64 deadline = game.migrationDeadline();
+        assertEq(deadline, game.claimsExpireAt());
+        uint256 reservedEth = game.reservedPlayerEth();
+        uint256 reservedTokens = game.escrowBacking(9);
+        uint256 team = game.teamEth();
+        uint256 protocolEth = address(game).balance - team - reservedEth;
+        uint256 protocolTokens = MugiCrewToken(crew[9]).balanceOf(address(game)) - reservedTokens;
+        uint256 communityEth = COMMUNITY.balance;
+        uint256 communityTokens = MugiCrewToken(crew[9]).balanceOf(COMMUNITY);
+        (uint256[10] memory tokensBefore, uint256 ethBefore,) = game.previewAccount(ALICE);
+        vm.warp(deadline - 1);
+        vm.expectRevert(MugiIMDGameHook.InvalidState.selector);
+        game.fallbackFinaleToCommunity();
+        vm.warp(deadline);
+        vm.expectRevert(MugiIMDGameHook.InvalidState.selector);
+        game.migrateToV2(address(receiver));
+        vm.prank(BOB);
+        game.fallbackFinaleToCommunity();
+        assertTrue(game.migrated());
+        assertEq(COMMUNITY.balance - communityEth, protocolEth);
+        assertEq(MugiCrewToken(crew[9]).balanceOf(COMMUNITY) - communityTokens, protocolTokens);
+        assertEq(address(game).balance, team + reservedEth);
+        assertEq(MugiCrewToken(crew[9]).balanceOf(address(game)), reservedTokens);
+        assertEq(game.reservedPlayerEth(), reservedEth);
+        assertEq(game.escrowBacking(9), reservedTokens);
+        (uint256[10] memory tokensAfter, uint256 ethAfter,) = game.previewAccount(ALICE);
+        assertEq(tokensAfter[9], tokensBefore[9]);
+        assertEq(ethAfter, ethBefore);
+        vm.expectRevert(MugiIMDGameHook.InvalidState.selector);
+        game.fallbackFinaleToCommunity();
+        vm.expectRevert(MugiIMDGameHook.InvalidState.selector);
+        game.migrateToV2(address(receiver));
+        game.sweepExpiredFinalClaims();
+        assertEq(COMMUNITY.balance - communityEth, protocolEth + reservedEth);
+        assertEq(address(game).balance, team);
+        assertEq(MugiCrewToken(crew[9]).balanceOf(address(game)), 0);
+        _assertSolvent();
+    }
+
+    function testExpiryBeforeFinaleFallbackCannotEraseMigrationDeadline() public {
+        _finishSeason();
+        uint64 deadline = game.migrationDeadline();
+        uint256 reservedEth = game.reservedPlayerEth();
+        uint256 protocolEth = address(game).balance - game.teamEth() - reservedEth;
+        uint256 protocolTokens = MugiCrewToken(crew[9]).balanceOf(address(game)) - game.escrowBacking(9);
+        uint256 communityEth = COMMUNITY.balance;
+        uint256 communityTokens = MugiCrewToken(crew[9]).balanceOf(COMMUNITY);
+        vm.warp(deadline);
+        game.sweepExpiredFinalClaims();
+        assertEq(game.claimsExpireAt(), 0);
+        assertEq(game.migrationDeadline(), deadline);
+        assertEq(COMMUNITY.balance - communityEth, reservedEth);
+        vm.prank(BOB);
+        game.fallbackFinaleToCommunity();
+        assertEq(COMMUNITY.balance - communityEth, reservedEth + protocolEth);
+        assertEq(MugiCrewToken(crew[9]).balanceOf(COMMUNITY) - communityTokens, protocolTokens);
+        assertEq(address(game).balance, game.teamEth());
+        assertEq(MugiCrewToken(crew[9]).balanceOf(address(game)), 0);
+        _assertSolvent();
+    }
+
+    function testRejectingCommunityRollsBackFallbackAndAllowsPermissionlessRetry() public {
+        _finishSeason();
+        vm.warp(game.migrationDeadline());
+        vm.etch(COMMUNITY, address(new RejectFinaleEther()).code);
+        uint256 ethBefore = address(game).balance;
+        uint256 tokenBefore = MugiCrewToken(crew[9]).balanceOf(address(game));
+        uint256 communityBefore = MugiCrewToken(crew[9]).balanceOf(COMMUNITY);
+        vm.expectRevert(MugiIMDGameHook.EthTransferFailed.selector);
+        game.fallbackFinaleToCommunity();
+        assertFalse(game.migrated());
+        assertEq(address(game).balance, ethBefore);
+        assertEq(MugiCrewToken(crew[9]).balanceOf(address(game)), tokenBefore);
+        assertEq(MugiCrewToken(crew[9]).balanceOf(COMMUNITY), communityBefore);
+        vm.etch(COMMUNITY, hex"");
+        vm.prank(BOB);
+        game.fallbackFinaleToCommunity();
+        assertTrue(game.migrated());
+        _assertSolvent();
+    }
+
+    function testCommunityTreasuryCannotBecomeOwner() public {
+        vm.expectRevert(MugiIMDGameHook.InvalidConfiguration.selector);
+        game.transferOwnership(COMMUNITY);
+        assertEq(game.pendingOwner(), address(0));
+        game.transferOwnership(BOB);
+        vm.prank(BOB);
+        game.acceptOwnership();
+        vm.prank(BOB);
+        vm.expectRevert(MugiIMDGameHook.InvalidConfiguration.selector);
+        game.transferOwnership(COMMUNITY);
+        assertEq(game.owner(), BOB);
     }
 }

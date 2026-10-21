@@ -71,7 +71,10 @@ def main():
     assert [c["contract"] for c in manifest["contracts"]] == FACTORIES, "Unexpected manifest scope/order"
     assert cfg["status"] == "partial-season-constants-not-deployable"
     assert cfg["configurationFieldOrder"] == FIELDS
-    assert cfg["unresolved"] == FIELDS[6:], "Must preserve unresolved deployment bindings"
+    assert cfg["unresolved"] == ["v2MigrationTarget"] + FIELDS[6:], "Must preserve unresolved treasury, V2 and deployment bindings"
+    assert cfg["v2MigrationTarget"] is None, "V2 receiver remains a required reviewed contract address"
+    assert re.fullmatch(r"0x[0-9a-fA-F]{40}", cfg["communityTreasury"])
+    assert cfg["communityTreasury"].lower() not in [cfg["owner"].lower(), cfg["teamTreasury"].lower(), "0x" + "0" * 40]
     assert cfg["chainId"] == 1
     assert re.fullmatch(r"0x[0-9a-fA-F]{40}", cfg["owner"])
     hashes = {}

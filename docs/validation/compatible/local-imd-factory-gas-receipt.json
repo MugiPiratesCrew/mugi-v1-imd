@@ -1,0 +1,103 @@
+{
+  "mode": "Local Anvil RPC estimate plus actual locally mined receipt; no public transaction",
+  "artifactRoot": "this repository",
+  "forkBlock": 26244024,
+  "forkBlockHash": "0x73debead5d7597522b733095902b3da29846f85c0d2b93b66c431b4ea27f504c",
+  "syntheticLaunchNumber": "18446744073709551613",
+  "syntheticRecord": true,
+  "imdFactory": "0xff03410d0fe5fa8f7f59f743de35e333d9857120",
+  "registry": "0x7c9D5ee697BfF5Ac4F10E2E54d3f40c44e48fE23",
+  "estimatedGas": "14207886",
+  "actualGasUsed": "14187986",
+  "transactionGasCap": "16777216",
+  "actualHeadroom": "2589230",
+  "runtimeCodeDepositGas": "12075000",
+  "intrinsicCalldataGas": "1359344",
+  "executionGasIncludingCodeDeposit": "12828642",
+  "creationArtifacts": [
+    {
+      "name": "MugiIMDCrewFactory",
+      "rawCreationCodeHash": "0xbdea60adecad092b49ae6927dabba682caebaafa6680868410b632d9d3050b49",
+      "creationCodeHash": "0x82f5997f6a126ac8d6ca9f8c3ca94b46e0a143a30ed4284508e99d3a63cd90e6",
+      "initcodeBytes": 7366,
+      "runtimeBytes": 7180
+    },
+    {
+      "name": "MugiV1IMDDeploymentFactory",
+      "rawCreationCodeHash": "0x4cd5521cae09548f3dd03f2665d223797c906c175c40a8b535176d87c952c225",
+      "creationCodeHash": "0x98d370713d8ba086ebfcad33a1ae1be38d7b2161b23268b9b409013ea603f1b3",
+      "initcodeBytes": 46853,
+      "runtimeBytes": 21064
+    },
+    {
+      "name": "MugiIMDAccountingFactory",
+      "rawCreationCodeHash": "0xa0a571f7418bd0cb868565f5f4a19201805092c2fd9771f2e43e7c31198b1974",
+      "creationCodeHash": "0xbfd2a4544ce1f22344f4db724073790e878638eb2b526f3cd16e50c5c9484ea5",
+      "initcodeBytes": 19148,
+      "runtimeBytes": 18963
+    },
+    {
+      "name": "MugiIMDEngineFactory",
+      "rawCreationCodeHash": "0x0d97ebaca857ff568b845300e251575e510003f4d46a3b26bacedb063ae1ba79",
+      "creationCodeHash": "0xc88119d1ce9b84064dd5d6bcb1fb10f0edfdba8575d5b995b1dab69663d0d783",
+      "initcodeBytes": 13353,
+      "runtimeBytes": 13168
+    }
+  ],
+  "expectedContracts": [
+    "0x129F9d99B609D57d9A7D2a980174Cd0B9a6feED0",
+    "0x8a18E0501B3a140958A274f9beFd569D001b0a61",
+    "0x7aF26000aeeb2a6450C1BC666a9aAAe0Ce8Ee92a",
+    "0xcA22206253a83a3E94745619f670A9E8E66ef9FA"
+  ],
+  "localReceipt": {
+    "type": "0x2",
+    "status": "0x1",
+    "cumulativeGasUsed": "0xd87dd2",
+    "logs": [
+      {
+        "address": "0x7c9d5ee697bff5ac4f10e2e54d3f40c44e48fe23",
+        "topics": [
+          "0x842d5f2a8e1a9d01abf8bc2b6269628d3a53f94e060e8fa6021414c5710382f0",
+          "0x000000000000000000000000000000000000000000000000fffffffffffffffd",
+          "0x65766d5f636f6e74726163747300000000000000000000000000000000000000"
+        ],
+        "data": "0xc8b85ff19a3bc28dd1f3f948efc1621961cb153f7884f9b4b3aca5045e3b6b36a68549de079030f19622f12fa342acee312d94e9274ec564060bc1b04af6bbb8000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000001200000000000000000000000000000000000000000000000000000000000000004000000000000000000000000129f9d99b609d57d9a7d2a980174cd0b9a6feed00000000000000000000000008a18e0501b3a140958a274f9befd569d001b0a610000000000000000000000007af26000aeeb2a6450c1bc666a9aaae0ce8ee92a000000000000000000000000ca22206253a83a3e94745619f670a9e8e66ef9fa0000000000000000000000000000000000000000000000000000000000000000",
+        "blockHash": "0xf9a17d4ff2b26496597c24fb3d76a5524cafd042d8f7740ec9cba014a6dbaa47",
+        "blockNumber": "0x19073ba",
+        "blockTimestamp": "0x6ad9415a",
+        "transactionHash": "0x0c7fdb8bfc8325a31e4286b1f4ed62829aeb77c22ac94ae47dbaf4394594b538",
+        "transactionIndex": "0x0",
+        "logIndex": "0x0",
+        "removed": false
+      },
+      {
+        "address": "0xff03410d0fe5fa8f7f59f743de35e333d9857120",
+        "topics": [
+          "0xc5072623c00f524bc781b8c6d63c823f97681871148f832424827833fea92668",
+          "0x000000000000000000000000000000000000000000000000fffffffffffffffd"
+        ],
+        "data": "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000004000000000000000000000000129f9d99b609d57d9a7d2a980174cd0b9a6feed00000000000000000000000008a18e0501b3a140958a274f9befd569d001b0a610000000000000000000000007af26000aeeb2a6450c1bc666a9aaae0ce8ee92a000000000000000000000000ca22206253a83a3e94745619f670a9e8e66ef9fa",
+        "blockHash": "0xf9a17d4ff2b26496597c24fb3d76a5524cafd042d8f7740ec9cba014a6dbaa47",
+        "blockNumber": "0x19073ba",
+        "blockTimestamp": "0x6ad9415a",
+        "transactionHash": "0x0c7fdb8bfc8325a31e4286b1f4ed62829aeb77c22ac94ae47dbaf4394594b538",
+        "transactionIndex": "0x0",
+        "logIndex": "0x1",
+        "removed": false
+      }
+    ],
+    "logsBloom": "0x00000000004000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000000000000000408000000008000000000200000000000000000000000002000000000004000000000000000000000000000000000000000000010001000040000200000000000000002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000004040000000000000000000000000000000000001",
+    "transactionHash": "0x0c7fdb8bfc8325a31e4286b1f4ed62829aeb77c22ac94ae47dbaf4394594b538",
+    "transactionIndex": "0x0",
+    "blockHash": "0xf9a17d4ff2b26496597c24fb3d76a5524cafd042d8f7740ec9cba014a6dbaa47",
+    "blockNumber": "0x19073ba",
+    "gasUsed": "0xd87dd2",
+    "effectiveGasPrice": "0x342508e",
+    "blobGasPrice": "0x16d",
+    "from": "0xcecc29b037f5064fcdf45a5c318f132ef76aa551",
+    "to": "0xff03410d0fe5fa8f7f59f743de35e333d9857120",
+    "contractAddress": null
+  },
+  "limitations": "Gas applies to these exact compiled creation bytes and synthetic registry metadata at the pinned fork. Rehearse the final source/constructor/manifest payload before any public launch. This is not IMD admission or production deployment."
+}

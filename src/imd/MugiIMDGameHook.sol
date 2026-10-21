@@ -59,6 +59,7 @@ contract MugiIMDGameHook {
     uint64 public configuredAt;
     uint64 public nextCutoff;
     uint64 public claimsExpireAt;
+    uint64 public migrationDeadline;
     uint256 public pendingRequest;
     uint256 public teamEth;
     uint256[10] public teamTokens;
@@ -100,12 +101,13 @@ contract MugiIMDGameHook {
     event ReserveReleased(uint8 indexed crew, uint256 amount);
     event ReserveRetired(uint8 indexed crew, uint256 amount);
     event V2Handoff(address indexed target, uint8 indexed survivor, uint256 ethAmount, uint256 tokens);
+    event FinaleFallback(address indexed community, uint8 indexed survivor, uint256 ethAmount, uint256 tokens);
     event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event EmergencyRecoveryStarted(uint256 indexed requestId, uint64 deadline);
     event EmergencyRecoveryClosed(uint16 aliveMask, uint256 recoveryEth, uint64 claimsDeadline);
 
-    /// @notice Every dependency and authority is fixed at construction. The crew
+    /// @notice Dependencies and the initial owner are fixed at construction. The crew
     /// factory creates exactly ten tokens using CREATE nonces 1..10.
     struct Configuration {
         address owner;
@@ -127,6 +129,7 @@ contract MugiIMDGameHook {
 
     constructor(Configuration memory c) {
         if (c.owner == address(0) || c.team == address(0) || c.community == address(0)
+            || c.v2MigrationTarget == address(0) || c.community == c.owner || c.community == c.team
             || c.manager == address(0) || c.ledger == address(0) || c.engine == address(0)
             || c.budgets == address(0) || c.prices == address(0) || c.randomnessProvider == address(0)
             || c.airdrop == address(0) || c.crewFactory == address(0)
@@ -159,7 +162,7 @@ contract MugiIMDGameHook {
 
     /// @notice A replacement wallet must accept before any owner privilege moves.
     function transferOwnership(address newOwner) external onlyOwner {
-        if (newOwner == address(0) || newOwner == owner) revert InvalidConfiguration();
+        if (newOwner == address(0) || newOwner == owner || newOwner == communityTreasury) revert InvalidConfiguration();
         pendingOwner = newOwner;
         emit OwnershipTransferStarted(owner, newOwner);
     }
@@ -478,12 +481,14 @@ contract MugiIMDGameHook {
         _retireReserve(survivor);
         phase = Phase.Finalized;
         claimsExpireAt = uint64(block.timestamp + FINAL_CLAIM_WINDOW);
+        migrationDeadline = claimsExpireAt;
     }
 
-    /// @notice Manual V2 handoff after V2 is deployed and its source binding is set.
-    function migrateToV2(address target) external onlyOwner guarded {
+    /// @notice Anyone can execute the fixed V2 handoff before the 30-day deadline.
+    /// The precommitted receiver must have code and accept the handoff atomically.
+    function migrateToV2(address target) external guarded {
         if (phase != Phase.Finalized || migrated || target.code.length == 0
-            || (v2MigrationTarget != address(0) && target != v2MigrationTarget)) revert InvalidState();
+            || target != v2MigrationTarget || block.timestamp >= migrationDeadline) revert InvalidState();
         migrated = true;
         uint8 survivor;
         while ((aliveMask & (uint16(1) << survivor)) == 0) ++survivor;
@@ -494,9 +499,25 @@ contract MugiIMDGameHook {
         emit V2Handoff(target, survivor, ethAmount, inventory);
     }
 
+    /// @notice If V2 has not accepted the handoff within 30 days, anyone can send
+    /// only unreserved finale assets to the fixed community treasury. Claims and
+    /// team liabilities remain reserved until their separate claim/expiry paths.
+    function fallbackFinaleToCommunity() external guarded {
+        if (phase != Phase.Finalized || migrated || migrationDeadline == 0
+            || block.timestamp < migrationDeadline) revert InvalidState();
+        migrated = true;
+        uint8 survivor;
+        while ((aliveMask & (uint16(1) << survivor)) == 0) ++survivor;
+        uint256 inventory = MugiCrewToken(tokens[survivor]).balanceOf(address(this)) - ledger.escrowBacking(survivor) - unreleasedReserve[survivor];
+        uint256 ethAmount = address(this).balance - teamEth - ledger.reservedEth();
+        MugiCrewToken(tokens[survivor]).transfer(communityTreasury, inventory);
+        _pay(payable(communityTreasury), ethAmount);
+        emit FinaleFallback(communityTreasury, survivor, ethAmount, inventory);
+    }
+
     /// @notice Resolves liabilities that remain after the published 30-day final
     /// claim window. Expired ETH goes to the immutable community treasury and
-    /// remaining migration backing is burned; neither can be redirected to owner.
+    /// remaining migration backing is burned; callers cannot choose a recipient.
     function sweepExpiredFinalClaims() external guarded {
         uint64 deadline = claimsExpireAt;
         if ((phase != Phase.Finalized && phase != Phase.EmergencyClosed) || deadline == 0 || block.timestamp < deadline) revert InvalidState();

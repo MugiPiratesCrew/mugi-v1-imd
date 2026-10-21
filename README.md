@@ -22,10 +22,10 @@ Fork suites require `MUGI_IMD_MAINNET_FORK_RPC` and optionally
 not a public deployment. Compiler settings and dependencies remain unchanged:
 Solidity 0.8.26, Cancun, optimizer 200, via IR, bytecode hash none.
 
-Final validation: **144 V1 tests and one separate actual-V2 integration test passed**.
+Final validation: **152 V1 tests and one separate actual-V2 integration test passed**.
 See [the exact evidence and reproduction commands](docs/validation/compatible/VALIDATION.md).
 
-Source admission remains pending. Prior paid job
+Source admission remains pending. This R2 revision addresses the three blocking medium findings from paid job `0c8421fb-4f6d-4650-8c90-d9fd7d7a79c5` against commit `9901dc71030df5818e4b307df1c5c43506346c12`; see [the findings response](docs/IMD_COMPATIBLE_R2_RESPONSE.md). Earlier paid job
 `6a953f2f-d28d-46cc-91a4-f348efed5c10` reviewed rejected source
 `028d37769edce6e38324182b8909392a9852af16`, not this redesign. Historical reports
 under `docs/validation` apply only to their recorded source pins.

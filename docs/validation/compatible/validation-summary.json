@@ -1,9 +1,9 @@
 {
   "tests": {
-    "passed": 144,
+    "passed": 152,
     "failed": 0,
     "skipped": 0,
-    "suites": 18
+    "suites": 19
   },
   "separateV2IntegrationTests": {
     "passed": 1,
@@ -16,9 +16,9 @@
   "compiledSourcesMatch": true,
   "sourceFilesChecked": 75,
   "hook": {
-    "rawHookCreationCodeHash": "0x951762db72e848ea4b31a47d15996fee39f8f5c66b9fdec9956da2392866357f",
-    "runtimeBytes": 22663,
-    "initcodeBytesIncludingArguments": 24913
+    "rawHookCreationCodeHash": "0x7161ccaa791cb35a95cb47bcdb62910259125bfa3766f76e37d178db68f108d2",
+    "runtimeBytes": 23578,
+    "initcodeBytesIncludingArguments": 25930
   },
   "toolchain": {
     "forge": "forge Version: 1.5.1-stable\nCommit SHA: b0a9dd9ceda36f63e2326ce530c10e6916f4b8a2\nBuild Timestamp: 2025-12-22T11:39:01.425730780Z (1766403541)\nBuild Profile: maxperf",
@@ -29,7 +29,7 @@
     "bytecodeHash": "none"
   },
   "fork": {
-    "rpc": "https://ethereum-rpc.publicnode.com",
+    "rpc": "https://rpc.flashbots.net",
     "block": 26244024,
     "hash": "0x73debead5d7597522b733095902b3da29846f85c0d2b93b66c431b4ea27f504c",
     "timestamp": 1792622363
@@ -42,15 +42,25 @@
     "Service settings, exact future graph, gas, funding and activation require a subsequent reviewed deployment plan."
   ],
   "evidenceSha256": {
-    "MugiIMDCompatibleV1ToV2.t.sol.txt": "96e6e76f7db5959499bc3ceb2fcd3a6a76f82cbb5fbabec8538d48f75cc21016",
-    "VALIDATION.md": "a67bf0d7ce689b64165ee868c0c74e62d07330154986421c9d7641b2de0cd5cb",
-    "artifact-review.json": "8e0b107e548dd59162601d4324e1c8fe90e04ca39e71cbd5122e0c2448180cef",
+    "MugiIMDCompatibleV1ToV2.t.sol.txt": "b812c080a8483aa61818e3a9cb01b3b82e98d596e45aa11c0e4377dfdc67922c",
+    "VALIDATION.md": "c539dde00538e10ace075a93b7e84ed479b60c491ff82d6c6ed7ca76b12e781c",
+    "artifact-review.json": "3a7ffe886758687119f27b1d2571e80ba4c6082f77ccf3422d0f026fa1c19484",
     "fork-block.json": "667015cc69a578a5d012a8f5116a43d82a3622ebd8a830ff8eb11302cfbfc500",
-    "full-suite.json": "72517b4d63d8ad0ab75be1e0dd6bc038ddb49ee2352343781eee4f63cba9d6f8",
-    "full-suite.raw.log": "b63e0dd719837c4e838e358aa61edf154e0d5fb608ecfb8914460c7a3dc2a398",
-    "test-results.json": "acfb1c8f881ec5ea502fe0345b27f95e281d891a729b5e94fff3b792c4b6ed8e",
-    "v2-integration-result.json": "7a1b7b738db97ea648978de250cfdb17efecec7c9e382cd360e92e2a5a0b344d",
-    "v2-integration.log": "4a92d077b18f8ef6f78b1930e0fc62c3a9d13377606a6fde4dfe1e85a864c78b",
-    "v2-source-identities.json": "594a6d6cf2690e1fae23b176375669c10205ea7df95989b07dea4efced891ac1"
-  }
+    "full-suite.json": "8496af29581f6025c6841870c66eff6947977f2183e28f57a97196817578df46",
+    "full-suite.raw.log": "b7c7fd78a6dc23fbdc409929e903a60944b65d5b69e893fed857fcfe7d147ab5",
+    "local-imd-factory-gas-receipt.json": "4f6564d49b7d438fe5c0e8520e3bdb0a69338da7f9ef1050443d0e3d9d409bbc",
+    "test-results.json": "206323bd84b97ff0e2f917055f7637fda24f7da45d30ed9a23aa76fb81314fab",
+    "v2-compiler-sources.json": "a98c7f7a24506443eb5f133aa26d0a5f9f7a8dc9930b8a8d65a6da1fcc85cf34",
+    "v2-integration-result.json": "8ee321db2c16b5471156a05d10291eb214011a1c6bd54778e5704cbbe4b347fd",
+    "v2-integration.log": "551143ae23def2f1e34ef5338b6bbb069439d355438646fd5f6db4d89ef8ac06",
+    "v2-source-identities.json": "26dc4a5635f4331a1896488316a551eb657f34af0c477b5cd17f81c6bac986fd"
+  },
+  "localImdFactoryRehearsal": {
+    "actualGasUsed": "14187986",
+    "headroomTo16777216": "2589230",
+    "publicTransaction": false,
+    "forkBlock": 26244024
+  },
+  "reviewedAtUtc": "2026-10-21T23:32:26.068655+00:00",
+  "priorAuditReportHash": "573ea9d5650bafcdc892589b64157aecbe9239f7efb89fa37b3d9bed699654f2"
 }

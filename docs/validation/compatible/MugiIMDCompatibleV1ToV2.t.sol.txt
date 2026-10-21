@@ -26,7 +26,9 @@ contract MugiIMDCompatibleV1ToV2Test is MugiGameTestBase {
         _setup(new PoolManager(address(this)));
     }
 
-    function _migrationTarget() internal pure override returns (address) { return address(0); }
+    function _migrationTarget() internal pure override returns (address) {
+        return address(uint160(0x7734000000) | uint160(0x2aec));
+    }
 
     function _deployGame(IPoolManager manager_) internal override returns (MugiIMDGameHook deployed) {
         deployed = super._deployGame(manager_);
@@ -72,9 +74,8 @@ contract MugiIMDCompatibleV1ToV2Test is MugiGameTestBase {
         assertGt(bobTokens[9], 0);
         assertGt(bobEth, 0);
 
-        vm.expectRevert(MugiIMDGameHook.Unauthorized.selector);
+        // The precommitted receiver can be funded by any caller.
         vm.prank(ALICE);
-        game.migrateToV2(address(nextGame));
         game.migrateToV2(address(nextGame));
         assertTrue(game.migrated());
         assertTrue(nextGame.v1MigrationReceived());

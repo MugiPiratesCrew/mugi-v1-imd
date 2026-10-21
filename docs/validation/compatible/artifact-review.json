@@ -1,6 +1,6 @@
 {
-  "reviewedAtUtc": "2026-10-21T22:55:07.097311+00:00",
-  "root": ".",
+  "reviewedAtUtc": "2026-10-21T23:32:26.038753+00:00",
+  "root": "/tmp/mugi-imd-compatible-20261021",
   "artifactTypesChecked": 15,
   "deployedContractTypes": 14,
   "factoryTypes": 4,
@@ -53,16 +53,16 @@
     "tokenHookPrivilege": false,
     "sourceSha256": "4da2978c9863692db48021b31fb45ac76e9ee913acf966cd0d22081ee4657134"
   },
-  "hookRawCreationCodeHash": "0x951762db72e848ea4b31a47d15996fee39f8f5c66b9fdec9956da2392866357f",
+  "hookRawCreationCodeHash": "0x7161ccaa791cb35a95cb47bcdb62910259125bfa3766f76e37d178db68f108d2",
   "commitmentCheck": {
     "manifestMatches": true,
     "compiledSourcesMatch": true,
     "sourceFilesChecked": 75,
     "manifestEntries": 4,
     "disclosedDescendants": 19,
-    "hookRawCreationCodeHash": "0x951762db72e848ea4b31a47d15996fee39f8f5c66b9fdec9956da2392866357f",
-    "hookRuntimeBytes": 22663,
-    "hookInitcodeBytesWithCompleteConfiguration": 24913,
+    "hookRawCreationCodeHash": "0x7161ccaa791cb35a95cb47bcdb62910259125bfa3766f76e37d178db68f108d2",
+    "hookRuntimeBytes": 23578,
+    "hookInitcodeBytesWithCompleteConfiguration": 25930,
     "factories": {
       "MugiIMDCrewFactory": {
         "runtimeBytes": 7180,
@@ -70,7 +70,7 @@
       },
       "MugiV1IMDDeploymentFactory": {
         "runtimeBytes": 21064,
-        "initcodeBytesIncludingOwner": 45836
+        "initcodeBytesIncludingOwner": 46853
       },
       "MugiIMDAccountingFactory": {
         "runtimeBytes": 18963,
@@ -121,7 +121,7 @@
       "instances": 1,
       "runtimeBytes": 21064,
       "runtimeHeadroomBytes": 3512,
-      "rawCreationBytes": 45804,
+      "rawCreationBytes": 46821,
       "constructorStaticWords": 1,
       "constructorInputs": [
         {
@@ -130,11 +130,11 @@
           "internalType": "address"
         }
       ],
-      "initcodeBytesIncludingArguments": 45836,
-      "initcodeHeadroomBytes": 3316,
+      "initcodeBytesIncludingArguments": 46853,
+      "initcodeHeadroomBytes": 2299,
       "nonpayableConstructor": true,
-      "creationCodeHash": "0xc5882d6911c07628366c973215d660748c3d711adf17fa5189c275e4940d112e",
-      "artifactSha256": "a4a351b894d461181764c77280bbe564bd63cbf7fdbb242e876596954549d8d2",
+      "creationCodeHash": "0x4cd5521cae09548f3dd03f2665d223797c906c175c40a8b535176d87c952c225",
+      "artifactSha256": "5344b7e5882b3399b17519374869e5f1cb47382dc39665f461a01287801c4295",
       "functionSelectors": {
         "airdrop()": "3884d635",
         "allTokens()": "6ff97f1d",
@@ -272,9 +272,9 @@
       "contract": "MugiIMDGameHook",
       "role": "descendant",
       "instances": 1,
-      "runtimeBytes": 22663,
-      "runtimeHeadroomBytes": 1913,
-      "rawCreationBytes": 24465,
+      "runtimeBytes": 23578,
+      "runtimeHeadroomBytes": 998,
+      "rawCreationBytes": 25482,
       "constructorStaticWords": 14,
       "constructorInputs": [
         {
@@ -355,11 +355,11 @@
           ]
         }
       ],
-      "initcodeBytesIncludingArguments": 24913,
-      "initcodeHeadroomBytes": 24239,
+      "initcodeBytesIncludingArguments": 25930,
+      "initcodeHeadroomBytes": 23222,
       "nonpayableConstructor": true,
-      "creationCodeHash": "0x951762db72e848ea4b31a47d15996fee39f8f5c66b9fdec9956da2392866357f",
-      "artifactSha256": "2f512154e8cb83d4c952f63dc04478e3c74864c9eba4c11b2ff62f0e282228e0",
+      "creationCodeHash": "0x7161ccaa791cb35a95cb47bcdb62910259125bfa3766f76e37d178db68f108d2",
+      "artifactSha256": "8137651df9d8011afddc46eccfd313790a78f1bf3d2d5061dffa155e0aa39ca1",
       "functionSelectors": {
         "FINAL_CLAIM_WINDOW()": "412cb9b4",
         "HOOK_FLAGS()": "08b66372",
@@ -394,6 +394,7 @@
         "escrowBacking(uint8)": "5bdacc94",
         "executeBuyback(uint64,uint8,uint256)": "5f184554",
         "executeOwnBuyback(uint8,uint256)": "825120d3",
+        "fallbackFinaleToCommunity()": "809e9edd",
         "finalize()": "4bb278f3",
         "imdVerifier()": "21f57047",
         "initialSupply()": "378dc3dc",
@@ -402,6 +403,7 @@
         "ledger()": "56397c35",
         "migrateToV2(address)": "66ebd54c",
         "migrated()": "2c678c64",
+        "migrationDeadline()": "83924de0",
         "nextCutoff()": "03ebc126",
         "ownBurnBudget(uint256)": "9f44cc9e",
         "ownLastTrade(uint256)": "32afe342",
@@ -470,7 +472,7 @@
       "initcodeHeadroomBytes": 45033,
       "nonpayableConstructor": true,
       "creationCodeHash": "0x836602571804953af8f1c5d320fc11387cd46e5acf125c13d8f086a50aa93e6a",
-      "artifactSha256": "83f335042a6c2b0d78b8c2095f1b8bd0460fb60d39c1cfb03a8e2cc24b8eae05",
+      "artifactSha256": "6de7bd3f9f43ada5d3fedc3b699631c13f9f842de0db05a1a98db9d6a40bff13",
       "functionSelectors": {
         "buy(uint8,uint256,uint64)": "1a4abbfd",
         "hook()": "7f5a7c7b",
@@ -960,7 +962,7 @@
     "Constructor premint reserve is not circulating supply; deterministic reserve releases remain part of V1 economics.",
     "Official-pool lifecycle gates remain, but crew ERC20 holder transfers have no lifecycle freeze or owner pause.",
     "Hook poolManager.mint creates Uniswap ERC6909 native-fee claims, not additional crew ERC20 supply.",
-    "Owner seeding, prelaunch abort refund, ownership transfer, manual one-shot V2 handoff, and verifier request pin/revoke remain disclosed authority.",
+    "Owner seeding, prelaunch abort refund, ownership transfer, and verifier request pin/revoke remain disclosed authority. V2 handoff is permissionless to the constructor-pinned receiver, with a fixed community fallback after 30 days.",
     "This report performs no network reads, public deployment, payment, explorer source verification or IMD admission."
   ]
 }

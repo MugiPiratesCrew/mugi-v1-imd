@@ -5,8 +5,8 @@
   "owner": "0x20714d50f4675c366de30b603728a90ddddb240f",
   "poolManager": "0x000000000004444c5dc75cb358380d2e3de08a90",
   "teamTreasury": "0x20714d50f4675c366de30b603728a90ddddb240f",
-  "communityTreasury": "0x20714d50f4675c366de30b603728a90ddddb240f",
-  "v2MigrationTarget": "0x0000000000000000000000000000000000000000",
+  "communityTreasury": "0x973d5993Be7021882f72da0babCF884e77F76bBb",
+  "v2MigrationTarget": null,
   "initialSupply": "1000000000000000000000000",
   "configurationFieldOrder": [
     "owner",
@@ -25,6 +25,7 @@
     "crewFactory"
   ],
   "unresolved": [
+    "v2MigrationTarget",
     "ledger",
     "engine",
     "budgets",
@@ -34,5 +35,5 @@
     "airdrop",
     "crewFactory"
   ],
-  "instructions": "This file supplies only season constants. It is not a complete constructor tuple or executable deployment payload. Derive all unresolved addresses from the final four factory addresses and their documented CREATE nonces; encode the complete flat 14-field Configuration, hash the exact compiled creation code plus that tuple, then mine the hook CREATE2 salt. Review all service and authority settings separately. Follow docs/IMD_CONSTRUCTOR_DEPLOYMENT.md. Do not use the previous six-argument constructor or its old full initcode hash."
+  "instructions": "This file supplies only season constants. It is not a complete constructor tuple or executable deployment payload. Derive all unresolved addresses from the final four factory addresses and their documented CREATE nonces; encode the complete flat 14-field Configuration, hash the exact compiled creation code plus that tuple, then mine the hook CREATE2 salt. Review all service and authority settings separately. Follow docs/IMD_CONSTRUCTOR_DEPLOYMENT.md. Do not use the previous six-argument constructor or its old full initcode hash. The community treasury is a separate user-authorized local wallet, not an independent governance body. The reviewed V2 receiver remains unresolved (null), not a launch address. Before creating the hook, commit a reviewed nonzero V2 receiver address; no arbitrary post-finale receiver selection is allowed. These child inputs are not needed for the four owner-only factory constructors."
 }

@@ -32,12 +32,22 @@ second reserve allocation. Unused reserve can never be withdrawn or migrated.
 
 ## V1 to V2 remains possible
 
-V2 is a separate implementation and admission/deployment task. V1 may be launched
-with a zero future target. After ordinary V1 finale, the owner selects a deployed
-receiver once using `migrateToV2`. If a nonzero target was constructor-pinned,
-only that target is accepted. The receiver implements
-`receiveV1Finale(uint8,address,uint256)` and is funded atomically with available
-finale ETH and survivor inventory.
+V2 is a separate implementation and admission/deployment task. V1 commits to a
+nonzero reviewed receiver address in its constructor. The address can be planned
+before the V2 contract is deployed, but cannot be changed after V1 creation.
+After ordinary V1 finale, anyone can call `migrateToV2` with exactly that address
+within the 30-day handoff window. The receiver must have deployed code and
+implement `receiveV1Finale(uint8,address,uint256)`; funding is atomic.
+
+If V2 is unavailable when the handoff window expires, anyone can execute the
+terminal recovery path. Only unreserved protocol ETH and survivor inventory go
+to the immutable community treasury; migration is permanently consumed. The
+community destination must differ from the owner and team treasury. The sample
+child configuration uses the separate community wallet explicitly authorized by
+the user and leaves the V2 receiver unresolved until a reviewed contract address
+is available. The separate wallet is controlled by the same operator; it is not
+an independent governance or multisignature arrangement.
+The four factory constructors require only the already specified owner address.
 
 Before this handoff, finale removes the last V4 position, freezes final accounting
 at its original cutoff and burns unused survivor reserve. Migration subtracts
@@ -52,9 +62,11 @@ V1 funds to arrive before its token is configured; activation is separate.
 
 ## Explicit remaining trust and admission limits
 
-- A zero V2 target retains owner discretion over the final receiver. One-shot
-  migration protects reserved claims, but does not constrain that receiver's
-  later use of protocol funds or promise holder redemption.
+- The constructor-pinned V2 receiver and community treasury must be reviewed
+  before creating the child graph. Address inequality does not prove separate
+  human control. No address can be substituted after the hook is created.
+  V2 receiver code governs its later use of protocol funds; V1 does not promise
+  individual holder redemption.
 - Constructor inputs still select the external VRF coordinator/subscription,
   airdrop attestor and IMD verifier signer. No mock service is a launch parameter.
   Hook dependencies are fixed at construction; factory provenance and external
@@ -65,6 +77,9 @@ V1 funds to arrive before its token is configured; activation is separate.
   an accepted audit report.
 - V2's present constructor/configuration path has not been adapted or admitted
   by this V1 change. The narrow handoff interface is preserved and tested.
+- PoolManager custody is excluded from wallet reward snapshots, including
+  third-party V4 LP balances. Ordinary contract wallets count at their address,
+  but must be capable of invoking claims; no beneficiary look-through exists.
 - There is no explorer source verification and no direct-deployment fallback.
 
 See `docs/IMD_CONSTRUCTOR_DEPLOYMENT.md` for creation order and deterministic

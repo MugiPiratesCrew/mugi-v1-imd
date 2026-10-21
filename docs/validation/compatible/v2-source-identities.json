@@ -41,7 +41,7 @@
     },
     "candidate/src/imd/MugiIMDGameHook.sol": {
       "source": "candidate/src/imd/MugiIMDGameHook.sol",
-      "sha256": "aed0434a136b943f9f475a773690119f61424f2b9a69d1cfe1501a406629a4b4"
+      "sha256": "a8ce5a0cd9f7dec150ba5124d4a8e71cbad2feb78f0a0322e6477e58030c63c5"
     },
     "candidate/src/imd/MugiIMDSwapRouter.sol": {
       "source": "candidate/src/imd/MugiIMDSwapRouter.sol",
@@ -113,10 +113,10 @@
     },
     "test/MugiIMDCompatibleV1ToV2.t.sol": {
       "source": "test/MugiIMDCompatibleV1ToV2.t.sol",
-      "sha256": "96e6e76f7db5959499bc3ceb2fcd3a6a76f82cbb5fbabec8538d48f75cc21016"
+      "sha256": "b812c080a8483aa61818e3a9cb01b3b82e98d596e45aa11c0e4377dfdc67922c"
     }
   },
   "foundry_sha256": "43fb4f34d854bc04547804631d0a0abfdaa39ff18786dc6af2e9b141b47db418",
-  "prepared_utc": "2026-10-21T22:43:18.565095+00:00",
+  "prepared_utc": "2026-10-21T23:21:18.216749+00:00",
   "forge_version": "forge Version: 1.5.1-stable\nCommit SHA: b0a9dd9ceda36f63e2326ce530c10e6916f4b8a2\nBuild Timestamp: 2025-12-22T11:39:01.425730780Z (1766403541)\nBuild Profile: maxperf"
 }
