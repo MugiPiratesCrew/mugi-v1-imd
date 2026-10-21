@@ -1,10 +1,38 @@
 {
   "chainId": 1,
   "contract": "src/imd/MugiIMDGameHook.sol:MugiIMDGameHook",
+  "status": "partial-season-constants-not-deployable",
   "owner": "0x20714d50f4675c366de30b603728a90ddddb240f",
   "poolManager": "0x000000000004444c5dc75cb358380d2e3de08a90",
   "teamTreasury": "0x20714d50f4675c366de30b603728a90ddddb240f",
   "communityTreasury": "0x20714d50f4675c366de30b603728a90ddddb240f",
   "v2MigrationTarget": "0x0000000000000000000000000000000000000000",
-  "initialSupply": "1000000000000000000000000"
+  "initialSupply": "1000000000000000000000000",
+  "configurationFieldOrder": [
+    "owner",
+    "manager",
+    "team",
+    "community",
+    "v2MigrationTarget",
+    "initialSupply",
+    "ledger",
+    "engine",
+    "budgets",
+    "prices",
+    "randomnessProvider",
+    "imdVerifier",
+    "airdrop",
+    "crewFactory"
+  ],
+  "unresolved": [
+    "ledger",
+    "engine",
+    "budgets",
+    "prices",
+    "randomnessProvider",
+    "imdVerifier",
+    "airdrop",
+    "crewFactory"
+  ],
+  "instructions": "This file supplies only season constants. It is not a complete constructor tuple or executable deployment payload. Derive all unresolved addresses from the final four factory addresses and their documented CREATE nonces; encode the complete flat 14-field Configuration, hash the exact compiled creation code plus that tuple, then mine the hook CREATE2 salt. Review all service and authority settings separately. Follow docs/IMD_CONSTRUCTOR_DEPLOYMENT.md. Do not use the previous six-argument constructor or its old full initcode hash."
 }

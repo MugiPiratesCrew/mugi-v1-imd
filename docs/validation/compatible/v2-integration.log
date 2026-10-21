@@ -1,0 +1,92 @@
+Compiling 11 files with Solc 0.8.26
+Solc 0.8.26 finished in 159.82s
+Compiler run successful with warnings:
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> candidate/src/imd/MugiIMDGameHook.sol:625:29:
+    |
+625 |     function previewAccount(address account) external view returns (uint256[10 ...
+    |                             ^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> candidate/src/imd/MugiIMDGameHook.sol:626:29:
+    |
+626 |     function eligibleSupply(uint8 crew) external view returns (uint256) { _forwardView(address(ledger)); }
+    |                             ^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> candidate/src/imd/MugiIMDGameHook.sol:628:28:
+    |
+628 |     function escrowBacking(uint8 crew) external view returns (uint256) { _forwardView(address(ledger)); }
+    |                            ^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> candidate/src/imd/MugiIMDGameHook.sol:630:22:
+    |
+630 |     function poolKey(uint8 crew) external view returns (PoolKey memory) { _forwardView(address(engine)); }
+    |                      ^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> candidate/src/imd/MugiIMDGameHook.sol:631:21:
+    |
+631 |     function poolId(uint8 crew) external view returns (PoolId) { _forwardView(address(engine)); }
+    |                     ^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> candidate/src/imd/MugiIMDGameHook.sol:632:24:
+    |
+632 |     function poolState(uint8 crew) external view returns (uint160, int24, uint128) { _forwardView(address(engine)); }
+    |                        ^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> candidate/src/imd/MugiIMDGameHook.sol:633:32:
+    |
+633 |     function positionLiquidity(uint8 crew) external view returns (uint128) { _forwardView(address(engine)); }
+    |                                ^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> candidate/src/imd/MugiIMDGameHook.sol:634:26:
+    |
+634 |     function buybackTwap(uint8 crew) external view returns (int24 tick, uint32 secondsUsed, uint16 observations) {
+    |                          ^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> candidate/src/imd/MugiIMDGameHook.sol:634:61:
+    |
+634 |     function buybackTwap(uint8 crew) external view returns (int24 tick, uint32 secondsUsed, uint16 observations) {
+    |                                                             ^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> candidate/src/imd/MugiIMDGameHook.sol:634:73:
+    |
+634 |     function buybackTwap(uint8 crew) external view returns (int24 tick, uint32 secondsUsed, uint16 observations) {
+    |                                                                         ^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> candidate/src/imd/MugiIMDGameHook.sol:634:93:
+    |
+634 |     function buybackTwap(uint8 crew) external view returns (int24 tick, uint32 secondsUsed, uint16 observations) {
+    |                                                                                             ^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> candidate/src/imd/MugiIMDGameHook.sol:638:26:
+    |
+638 |     function roundBudget(uint64 id) external view returns (MugiBuybacks.Budget memory) { _forwardView(address(budgets)); }
+    |                          ^^^^^^^^^
+
+2026-10-21T22:46:00.544866Z  WARN evm::traces::external: etherscan config not found
+
+Ran 1 test for test/MugiIMDCompatibleV1ToV2.t.sol:MugiIMDCompatibleV1ToV2Test
+[PASS] testCompatibleV1FullSeasonHandoffRealV2SeedLaunchTradeAndOldClaims() (gas: 27099718)
+Logs:
+  V1 eliminations completed: 9
+  V1 earned ETH retained before claims: 82222222222222213
+  V1 earned token backing retained before claims: 49033226298896403482323
+  V1 ETH handed to V2: 1008891317777777777777
+  V1 retired receipt tokens handed to V2: 3371171385446624755894968
+  Real fixed-supply V2 buy output: 9462616469107439351451
+  V1 Alice token claim after V2 trading: 466310530900955200195
+  V1 Alice ETH claim after V2 trading: 2315197237425177
+
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 126.34ms (97.70ms CPU time)
+
+Ran 1 test suite in 127.74ms (126.34ms CPU time): 1 tests passed, 0 failed, 0 skipped (1 total tests)

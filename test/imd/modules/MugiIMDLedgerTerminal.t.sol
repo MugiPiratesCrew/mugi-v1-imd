@@ -1,43 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import {Test} from "forge-std/Test.sol";
-import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {MugiIMDLedger} from "../../../src/imd/modules/MugiIMDLedger.sol";
+import {MugiIMDLedgerFixture, MugiLedgerHistoryToken} from "./MugiIMDLedgerFixture.sol";
 
-contract MugiTerminalLedgerToken is ERC20 {
-    constructor() ERC20("Terminal ledger test", "TLT") {}
-
-    function mint(address account, uint256 amount) external {
-        _mint(account, amount);
-    }
-
-    function burn(address account, uint256 amount) external {
-        _burn(account, amount);
-    }
-}
-
-/// @dev Token operations below reproduce the authenticated hook's before/after
-/// callbacks. Only the test hook mutates the ledger, as in the production module.
-contract MugiIMDLedgerTerminalTest is Test {
-    address internal constant ALICE = address(0xA11CE);
-    address internal constant BOB = address(0xB0B);
-    address internal constant CAROL = address(0xCA201);
-    address internal constant ENGINE = address(0xE0919E);
-    MugiIMDLedger internal ledger;
-    address[10] internal tokens;
-    uint16 internal alive = 1023;
-
-    function setUp() public {
-        ledger = new MugiIMDLedger(address(this));
-        for (uint8 i; i < 10; ++i) {
-            tokens[i] = address(new MugiTerminalLedgerToken());
-        }
-        ledger.initialize(tokens);
-        ledger.setExcluded(ENGINE, true);
-    }
-
+contract MugiIMDLedgerTerminalTest is MugiIMDLedgerFixture {
     function testNormalFinalizePreservesSyncedAndLazyEscrowAndOnlyUnreservedInventoryCanLeave() public {
         _mint(0, ALICE, 8 ether);
         _mint(0, BOB, 4 ether);
@@ -51,7 +19,7 @@ contract MugiIMDLedgerTerminalTest is Test {
         uint256 backing = ledger.escrowBacking(9);
         assertGt(beforeAlice[9], 0);
         assertGt(beforeBob[9], 0);
-        ledger.finalizeMigration(9);
+        _finalize(9);
         (uint256[10] memory afterAlice, uint256 afterAliceEth,) = ledger.previewAccount(ALICE);
         (uint256[10] memory afterBob, uint256 afterBobEth,) = ledger.previewAccount(BOB);
         assertEq(afterAlice[9], beforeAlice[9]);
@@ -63,9 +31,9 @@ contract MugiIMDLedgerTerminalTest is Test {
 
         // Migration to a non-excluded recipient must not create eligible supply.
         _mint(9, address(this), 100 ether);
-        uint256 free = MugiTerminalLedgerToken(tokens[9]).balanceOf(address(this)) - ledger.escrowBacking(9);
+        uint256 free = MugiLedgerHistoryToken(tokens[9]).balanceOf(address(this)) - ledger.escrowBacking(9);
         _transfer(9, address(this), address(0xF00), free);
-        assertEq(MugiTerminalLedgerToken(tokens[9]).balanceOf(address(this)), backing);
+        assertEq(MugiLedgerHistoryToken(tokens[9]).balanceOf(address(this)), backing);
         _assertEligibleSupplies(eligibleBefore);
         uint256 partialClaim = beforeAlice[9] / 2;
         assertEq(ledger.claimToken(ALICE, 9, partialClaim), partialClaim);
@@ -93,7 +61,7 @@ contract MugiIMDLedgerTerminalTest is Test {
         // Bob and Carol each earned 1 ETH from the previous elimination.
         assertEq(ledger.reservedEth(), 2 ether);
         uint256[10] memory eligibleBefore = _eligibleSupplies();
-        ledger.emergencyFinalize(alive, 9 ether);
+        _emergency(alive, 9 ether);
         (, uint256 aliceEth,) = ledger.previewAccount(ALICE);
         (, uint256 bobEth,) = ledger.previewAccount(BOB);
         (, uint256 carolEth,) = ledger.previewAccount(CAROL);
@@ -126,7 +94,7 @@ contract MugiIMDLedgerTerminalTest is Test {
             _mint(i, ENGINE, 1_000 ether);
             _mint(i, address(this), 1_000 ether);
         }
-        ledger.emergencyFinalize(alive, 10 ether + 9);
+        _emergency(alive, 10 ether + 9);
         assertEq(ledger.reservedEth(), 1 ether);
         assertEq(ledger.claimEth(ALICE), 1 ether);
         assertEq(ledger.reservedEth(), 0);
@@ -143,7 +111,7 @@ contract MugiIMDLedgerTerminalTest is Test {
         _eliminate(0, 9 ether);
         assertEq(ledger.claimEth(ALICE), 1 ether);
         assertEq(ledger.reservedEth(), 1 ether);
-        ledger.emergencyFinalize(alive, 9 ether);
+        _emergency(alive, 9 ether);
         (, uint256 aliceEth,) = ledger.previewAccount(ALICE);
         (, uint256 bobEth,) = ledger.previewAccount(BOB);
         (, uint256 carolEth,) = ledger.previewAccount(CAROL);
@@ -161,7 +129,7 @@ contract MugiIMDLedgerTerminalTest is Test {
         for (uint8 i; i < 10; ++i) {
             if (expiredBacking[i] != 0) _burn(i, address(this), expiredBacking[i]);
         }
-        assertEq(MugiTerminalLedgerToken(tokens[1]).balanceOf(CAROL), materialized);
+        assertEq(MugiLedgerHistoryToken(tokens[1]).balanceOf(CAROL), materialized);
         (, uint256 afterExpiryEth,) = ledger.previewAccount(CAROL);
         assertEq(afterExpiryEth, 0);
         vm.expectRevert(MugiIMDLedger.InvalidClaim.selector);
@@ -170,17 +138,17 @@ contract MugiIMDLedgerTerminalTest is Test {
 
     function testEmergencyRejectsWrongMaskAndCannotRecordAnotherTerminalOrRound() public {
         vm.expectRevert(MugiIMDLedger.InvalidRound.selector);
-        ledger.emergencyFinalize(0, 1 ether);
+        _emergency(0, 1 ether);
         vm.expectRevert(MugiIMDLedger.InvalidRound.selector);
-        ledger.emergencyFinalize(511, 1 ether);
+        _emergency(511, 1 ether);
         _mint(0, ALICE, 1 ether);
-        ledger.emergencyFinalize(alive, 10 ether);
+        _emergency(alive, 10 ether);
         vm.expectRevert(MugiIMDLedger.InvalidRound.selector);
-        ledger.emergencyFinalize(alive, 10 ether);
+        _emergency(alive, 10 ether);
         vm.expectRevert(MugiIMDLedger.InvalidRound.selector);
-        ledger.recordElimination(0, alive, 1 ether);
+        ledger.recordElimination(0, alive, 1 ether, uint64(block.timestamp));
         vm.expectRevert(MugiIMDLedger.InvalidRound.selector);
-        ledger.finalizeMigration(0);
+        _finalize(0);
     }
 
     function testExpirationCannotResurrectSyncedOrLazyClaimsInEitherTerminalMode() public {
@@ -207,15 +175,15 @@ contract MugiIMDLedgerTerminalTest is Test {
             _assertEligibleSupplies(liveSupply);
         }
         // At nine eliminations this uses the tenth and final bounded event slot.
-        ledger.emergencyFinalize(alive, 10 ether);
+        _emergency(alive, 10 ether);
         (, uint256 eagerEth, uint256[10] memory eagerVirtual) = ledger.previewAccount(ALICE);
         (, uint256 lazyEth, uint256[10] memory lazyVirtual) = ledger.previewAccount(BOB);
         assertEq(eagerEth, lazyEth);
         assertGt(lazyEth, 0);
         for (uint8 i = rounds; i < 10; ++i) {
             uint256 eagerEffective =
-                MugiTerminalLedgerToken(tokens[i]).balanceOf(ALICE) * ledger.SCALE() + eagerVirtual[i];
-            uint256 lazyEffective = MugiTerminalLedgerToken(tokens[i]).balanceOf(BOB) * ledger.SCALE() + lazyVirtual[i];
+                MugiLedgerHistoryToken(tokens[i]).balanceOf(ALICE) * ledger.SCALE() + eagerVirtual[i];
+            uint256 lazyEffective = MugiLedgerHistoryToken(tokens[i]).balanceOf(BOB) * ledger.SCALE() + lazyVirtual[i];
             assertEq(eagerEffective, lazyEffective);
         }
         uint256 reserve = ledger.reservedEth();
@@ -236,8 +204,8 @@ contract MugiIMDLedgerTerminalTest is Test {
         for (uint8 i; i < (emergency ? 3 : 9); ++i) {
             _eliminate(i, 9 ether);
         }
-        if (emergency) ledger.emergencyFinalize(alive, 9 ether);
-        else ledger.finalizeMigration(9);
+        if (emergency) _emergency(alive, 9 ether);
+        else _finalize(9);
         ledger.claimEth(ALICE); // Synced storage, whereas Bob still has cursor zero.
         (uint256[10] memory bobTokens, uint256 bobEth,) = ledger.previewAccount(BOB);
         assertGt(bobTokens[9], 0);
@@ -287,48 +255,4 @@ contract MugiIMDLedgerTerminalTest is Test {
         ledger.expireFinalClaims();
     }
 
-    function _eligibleSupplies() private view returns (uint256[10] memory supplies) {
-        for (uint8 i; i < 10; ++i) supplies[i] = ledger.eligibleSupply(i);
-    }
-
-    function _assertEligibleSupplies(uint256[10] memory expected) private view {
-        for (uint8 i; i < 10; ++i) {
-            assertEq(ledger.eligibleSupply(i), expected[i], "claim must only move virtual supply to wallet");
-        }
-    }
-
-    function _eliminate(uint8 loser, uint256 reward) private {
-        (uint256[10] memory mintRequired, uint256 oldBacking) = ledger.recordElimination(loser, alive, reward);
-        alive &= ~(uint16(1) << loser);
-        if (oldBacking != 0) _burn(loser, address(this), oldBacking);
-        for (uint8 i; i < 10; ++i) {
-            if (mintRequired[i] != 0) _mint(i, address(this), mintRequired[i]);
-        }
-    }
-
-    function _claimAll(address account) private returns (uint256[10] memory amounts) {
-        amounts = ledger.claimTokens(account);
-        for (uint8 i; i < 10; ++i) {
-            if (amounts[i] != 0) _transfer(i, address(this), account, amounts[i]);
-        }
-    }
-
-    function _mint(uint8 crew, address account, uint256 amount) private {
-        ledger.beforeBalanceChange(address(0), account);
-        MugiTerminalLedgerToken(tokens[crew]).mint(account, amount);
-        ledger.afterBalanceChange(crew, address(0), account, amount);
-    }
-
-    function _burn(uint8 crew, address account, uint256 amount) private {
-        ledger.beforeBalanceChange(account, address(0));
-        MugiTerminalLedgerToken(tokens[crew]).burn(account, amount);
-        ledger.afterBalanceChange(crew, account, address(0), amount);
-    }
-
-    function _transfer(uint8 crew, address from, address to, uint256 amount) private {
-        ledger.beforeBalanceChange(from, to);
-        vm.prank(from);
-        MugiTerminalLedgerToken(tokens[crew]).transfer(to, amount);
-        ledger.afterBalanceChange(crew, from, to, amount);
-    }
 }

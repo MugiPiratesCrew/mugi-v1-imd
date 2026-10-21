@@ -1,0 +1,56 @@
+{
+  "tests": {
+    "passed": 144,
+    "failed": 0,
+    "skipped": 0,
+    "suites": 18
+  },
+  "separateV2IntegrationTests": {
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0
+  },
+  "allProductionSizesValid": true,
+  "policyCapabilitiesRemoved": true,
+  "v2HandoffIntegrationPassed": true,
+  "compiledSourcesMatch": true,
+  "sourceFilesChecked": 75,
+  "hook": {
+    "rawHookCreationCodeHash": "0x951762db72e848ea4b31a47d15996fee39f8f5c66b9fdec9956da2392866357f",
+    "runtimeBytes": 22663,
+    "initcodeBytesIncludingArguments": 24913
+  },
+  "toolchain": {
+    "forge": "forge Version: 1.5.1-stable\nCommit SHA: b0a9dd9ceda36f63e2326ce530c10e6916f4b8a2\nBuild Timestamp: 2025-12-22T11:39:01.425730780Z (1766403541)\nBuild Profile: maxperf",
+    "solidity": "0.8.26",
+    "evm": "cancun",
+    "viaIR": true,
+    "optimizerRuns": 200,
+    "bytecodeHash": "none"
+  },
+  "fork": {
+    "rpc": "https://ethereum-rpc.publicnode.com",
+    "block": 26244024,
+    "hash": "0x73debead5d7597522b733095902b3da29846f85c0d2b93b66c431b4ea27f504c",
+    "timestamp": 1792622363
+  },
+  "sourceAdmissionConfirmed": false,
+  "publicDeploymentClaimed": false,
+  "limits": [
+    "All 19 descendant contracts need explicit IMD admission; the four factories alone do not activate the game.",
+    "V2 integration uses the actual existing V2 source in an isolated local fixture with mock VRF and deployCodeTo; it is not live deployment proof.",
+    "Service settings, exact future graph, gas, funding and activation require a subsequent reviewed deployment plan."
+  ],
+  "evidenceSha256": {
+    "MugiIMDCompatibleV1ToV2.t.sol.txt": "96e6e76f7db5959499bc3ceb2fcd3a6a76f82cbb5fbabec8538d48f75cc21016",
+    "VALIDATION.md": "a67bf0d7ce689b64165ee868c0c74e62d07330154986421c9d7641b2de0cd5cb",
+    "artifact-review.json": "8e0b107e548dd59162601d4324e1c8fe90e04ca39e71cbd5122e0c2448180cef",
+    "fork-block.json": "667015cc69a578a5d012a8f5116a43d82a3622ebd8a830ff8eb11302cfbfc500",
+    "full-suite.json": "72517b4d63d8ad0ab75be1e0dd6bc038ddb49ee2352343781eee4f63cba9d6f8",
+    "full-suite.raw.log": "b63e0dd719837c4e838e358aa61edf154e0d5fb608ecfb8914460c7a3dc2a398",
+    "test-results.json": "acfb1c8f881ec5ea502fe0345b27f95e281d891a729b5e94fff3b792c4b6ed8e",
+    "v2-integration-result.json": "7a1b7b738db97ea648978de250cfdb17efecec7c9e382cd360e92e2a5a0b344d",
+    "v2-integration.log": "4a92d077b18f8ef6f78b1930e0fc62c3a9d13377606a6fde4dfe1e85a864c78b",
+    "v2-source-identities.json": "594a6d6cf2690e1fae23b176375669c10205ea7df95989b07dea4efced891ac1"
+  }
+}

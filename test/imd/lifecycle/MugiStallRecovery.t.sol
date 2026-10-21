@@ -231,45 +231,16 @@ contract MugiFinaleRightsTest is MugiGameTestBase {
         _setup(new PoolManager(address(this)));
     }
 
-    function testPauseExpiresAutomaticallyAndCannotRenewWithinRound() public {
-        uint256 started = block.timestamp;
-        game.setPaused(true);
-        assertTrue(game.paused());
-        assertEq(game.pauseUntil(), started + 1 hours);
-        vm.expectRevert(MugiGameHook.InvalidState.selector);
-        game.executeOwnBuyback(0, 1);
-        vm.expectRevert(MugiGameHook.InvalidState.selector);
-        game.setPaused(true);
-        vm.warp(game.pauseUntil());
-        assertFalse(game.paused());
+    // IMD disallows owner pausing. The capability is absent, not disabled by a flag.
+    function testOwnerCannotInstallPauseAndTradingStillWorks() public {
+        (bool ok,) = address(game).call(abi.encodeWithSignature("setPaused(bool)", true));
+        assertFalse(ok);
         _fundTreasure(0);
-        vm.expectRevert(MugiGameHook.InvalidState.selector);
-        game.setPaused(true);
-        _round(0);
-        game.setPaused(true);
-        assertTrue(game.paused());
-        assertEq(game.pauseRound(), 2);
+        assertGt(game.treasure(0), 0);
     }
 
-    function testEarlyUnpauseDoesNotRestorePauseAllowance() public {
-        game.setPaused(true);
-        game.setPaused(false);
-        assertFalse(game.paused());
-        vm.expectRevert(MugiGameHook.InvalidState.selector);
-        game.setPaused(true);
-        vm.prank(ALICE);
-        vm.expectRevert(MugiGameHook.Unauthorized.selector);
-        game.setPaused(false);
-    }
-
-    function testPauseCannotExtendBeyondCutoffOrDelayRandomness() public {
-        vm.warp(game.nextCutoff() - 10);
-        game.setPaused(true);
-        assertEq(game.pauseUntil(), game.nextCutoff());
+    function testNoPauseCanDelayTheFixedRandomnessCutoff() public {
         vm.warp(game.nextCutoff());
-        assertFalse(game.paused());
-        vm.expectRevert(MugiGameHook.InvalidState.selector);
-        game.setPaused(true);
         game.requestElimination();
         assertEq(uint8(game.phase()), uint8(MugiGameHook.Phase.AwaitingRandomness));
     }

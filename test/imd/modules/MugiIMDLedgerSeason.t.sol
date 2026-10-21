@@ -1,115 +1,68 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import {Test} from "forge-std/Test.sol";
-import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {MugiIMDLedger} from "../../../src/imd/modules/MugiIMDLedger.sol";
+import {MugiIMDLedgerFixture} from "./MugiIMDLedgerFixture.sol";
 
-contract MugiSeasonBindingToken is ERC20 {
-    address public hook;
-    uint8 public characterId;
-
-    constructor(address hook_, uint8 id) ERC20("Binding test", "BIND") {
-        hook = hook_;
-        characterId = id;
-    }
-
-    function setHook(address value) external {
-        hook = value;
-    }
-
-    function setId(uint8 value) external {
-        characterId = value;
-    }
-
-    function mint(address account, uint256 amount) external {
-        _mint(account, amount);
-    }
-
-    function burn(address account, uint256 amount) external {
-        _burn(account, amount);
-    }
-}
-
-contract MugiSeasonBindingAirdrop {
-    address[10] public tokens;
-
-    constructor(address[10] memory tokens_) {
-        tokens = tokens_;
-    }
-
-    function setToken(uint8 id, address token) external {
-        tokens[id] = token;
-    }
-}
-
-contract MugiIMDLedgerSeasonTest is Test {
-    address internal constant ENGINE = address(0xE0919E);
-    address internal constant MANAGER = address(0xB001);
-    address internal constant TEAM = address(0x7EA);
-    address internal constant COMMUNITY = address(0xC044);
-    address internal constant ALICE = address(0xA11CE);
-    MugiIMDLedger internal ledger;
-    MugiSeasonBindingAirdrop internal airdrop;
-    address[10] internal tokens;
-
-    function setUp() public {
-        ledger = new MugiIMDLedger(address(this));
-        for (uint8 i; i < 10; ++i) {
-            tokens[i] = address(new MugiSeasonBindingToken(address(this), i));
-        }
-        airdrop = new MugiSeasonBindingAirdrop(tokens);
-    }
-
-    function testSeasonInitializationExcludesAllFiveProtocolAddressesAtomically() public {
-        _initialize();
-        address[5] memory excluded = [MANAGER, ENGINE, address(airdrop), TEAM, COMMUNITY];
-        for (uint8 i; i < 5; ++i) {
-            _mint(excluded[i], 100 ether);
-        }
-        _mint(address(this), 100 ether);
-        _mint(ALICE, 1 ether);
+contract MugiIMDLedgerSeasonTest is MugiIMDLedgerFixture {
+    function testConstructorFixesAllProtocolExclusionsWithoutInitialization() public {
+        address[7] memory excluded = [MANAGER, ENGINE, AIRDROP, TEAM, COMMUNITY, address(this), address(ledger)];
+        for (uint8 i; i < 7; ++i) _mint(0, excluded[i], 100 ether);
+        _mint(0, ALICE, 1 ether);
         assertEq(ledger.eligibleSupply(0), 1 ether * ledger.SCALE());
-        ledger.emergencyFinalize(1023, 10 ether);
+        _emergency(alive, 10 ether);
         assertEq(ledger.claimEth(ALICE), 1 ether);
-        for (uint8 i; i < 5; ++i) {
+        for (uint8 i; i < 7; ++i) {
             (, uint256 earned,) = ledger.previewAccount(excluded[i]);
             assertEq(earned, 0);
         }
-        vm.expectRevert(MugiIMDLedger.InvalidConfiguration.selector);
-        ledger.initialize(tokens);
     }
 
-    function testEachCrewBindingConstraintRejectsBeforeInitializationCanStick() public {
-        MugiSeasonBindingToken first = MugiSeasonBindingToken(tokens[0]);
-        first.setHook(ALICE);
-        vm.expectRevert(MugiIMDLedger.InvalidConfiguration.selector);
-        _initialize();
-        first.setHook(address(this));
-        first.setId(1);
-        vm.expectRevert(MugiIMDLedger.InvalidConfiguration.selector);
-        _initialize();
-        first.setId(0);
-        first.mint(ALICE, 1);
-        vm.expectRevert(MugiIMDLedger.InvalidConfiguration.selector);
-        _initialize();
-        first.burn(ALICE, 1);
-        airdrop.setToken(0, tokens[1]);
-        vm.expectRevert(MugiIMDLedger.InvalidConfiguration.selector);
-        _initialize();
-        airdrop.setToken(0, tokens[0]);
-        _initialize();
-        _mint(ALICE, 1 ether);
+    function testConstructorWorksBeforeAnyDependencyCodeExists() public {
+        MugiIMDLedger.Configuration memory c;
+        c.hook = address(1001);
+        c.token0 = address(2000); c.token1 = address(2001); c.token2 = address(2002); c.token3 = address(2003);
+        c.token4 = address(2004); c.token5 = address(2005); c.token6 = address(2006); c.token7 = address(2007);
+        c.token8 = address(2008); c.token9 = address(2009);
+        c.airdrop = address(3000); c.engine = address(3001); c.team = address(3002);
+        c.community = address(3003); c.manager = address(3004);
+        MugiIMDLedger futureDependencies = new MugiIMDLedger(c);
+        assertEq(futureDependencies.hook(), c.hook);
+        assertEq(futureDependencies.reservedEth(), 0);
+        assertEq(futureDependencies.escrowBacking(0), 0);
+    }
+
+    function testDuplicateTreasuryAddressesAreSubtractedOnlyOnce() public {
+        MugiIMDLedger.Configuration memory c = _configuration();
+        c.community = c.team;
+        ledger = new MugiIMDLedger(c);
+        _mint(0, TEAM, 100 ether);
+        _mint(0, ALICE, 1 ether);
         assertEq(ledger.eligibleSupply(0), 1 ether * ledger.SCALE());
+        _emergency(alive, 10 ether);
+        assertEq(ledger.claimEth(ALICE), 1 ether);
     }
 
-    function _initialize() private {
-        ledger.initializeSeason(tokens, address(airdrop), ENGINE, TEAM, COMMUNITY, MANAGER);
-    }
-
-    function _mint(address account, uint256 amount) private {
-        ledger.beforeBalanceChange(address(0), account);
-        MugiSeasonBindingToken(tokens[0]).mint(account, amount);
-        ledger.afterBalanceChange(0, address(0), account, amount);
+    function testConstructorRejectsZeroOrDuplicateTokensAndTokenProtocolRoleCollision() public {
+        MugiIMDLedger.Configuration memory c = _configuration();
+        c.token0 = address(0);
+        vm.expectRevert(MugiIMDLedger.InvalidConfiguration.selector);
+        new MugiIMDLedger(c);
+        c = _configuration();
+        c.token9 = c.token0;
+        vm.expectRevert(MugiIMDLedger.InvalidConfiguration.selector);
+        new MugiIMDLedger(c);
+        c = _configuration();
+        c.token0 = c.engine;
+        vm.expectRevert(MugiIMDLedger.InvalidConfiguration.selector);
+        new MugiIMDLedger(c);
+        c = _configuration();
+        c.hook = address(0);
+        vm.expectRevert(MugiIMDLedger.InvalidConfiguration.selector);
+        new MugiIMDLedger(c);
+        c = _configuration();
+        c.manager = address(0);
+        vm.expectRevert(MugiIMDLedger.InvalidConfiguration.selector);
+        new MugiIMDLedger(c);
     }
 }

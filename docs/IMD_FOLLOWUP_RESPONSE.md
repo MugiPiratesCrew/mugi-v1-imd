@@ -1,5 +1,9 @@
 # Follow-up IMD audit response, 21 October 2026
 
+> Historical response for candidate94d7836. The authorized compatibility redesign
+> supersedes the retained mint/freeze/pause/bootstrap choices below. See
+> [ADAPTATION.md](../ADAPTATION.md) and current validation for this source.
+
 The second paid submission is transaction
 `0xf9e0ac8ab84e1f9309dd66ba60498854dda03417d580bb07a12106a1bb69f91d`,
 job `6a953f2f-d28d-46cc-91a4-f348efed5c10`, reviewing source

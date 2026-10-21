@@ -3,6 +3,7 @@ pragma solidity ^0.8.26;
 
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import {MugiCrewToken} from "./MugiCrewToken.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /// @notice Fixed, preminted airdrop. Social verification remains an external attestation.
@@ -31,7 +32,7 @@ contract MugiAirdrop {
     constructor(address hook_, address attestor_, uint256 initialSupply_, address[10] memory tokens_) {
         if (hook_ == address(0) || attestor_ == address(0) || initialSupply_ < 1000) revert InvalidAirdrop();
         for (uint8 i; i < 10; ++i) {
-            if (tokens_[i].code.length == 0) revert InvalidAirdrop();
+            if (tokens_[i] == address(0)) revert InvalidAirdrop();
             for (uint8 j; j < i; ++j) {
                 if (tokens_[i] == tokens_[j]) revert InvalidAirdrop();
             }
@@ -86,6 +87,16 @@ contract MugiAirdrop {
         uint256 total;
         for (uint8 i; i < 10; ++i) total += registrations[i];
         return total >= AUTOMATIC_LAUNCH_REGISTRATIONS;
+    }
+
+    /// @notice Retire only this contract's unclaimed allocation after the window.
+    /// Holder balances are never burnable by the game or its owner.
+    function retireRemaining() external {
+        if (msg.sender != hook || launchedAt == 0 || block.timestamp < launchedAt + 22 hours) revert InvalidAirdrop();
+        for (uint8 i; i < 10; ++i) {
+            MugiCrewToken token = MugiCrewToken(tokens[i]);
+            token.burn(token.balanceOf(address(this)));
+        }
     }
 
     /// @notice The separate claim attestation confirms the required second social

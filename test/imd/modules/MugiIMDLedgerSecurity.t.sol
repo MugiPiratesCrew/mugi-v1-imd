@@ -1,69 +1,32 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import {Test} from "forge-std/Test.sol";
-import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {MugiIMDLedger} from "../../../src/imd/modules/MugiIMDLedger.sol";
+import {MugiIMDLedgerFixture, MugiLedgerHistoryToken} from "./MugiIMDLedgerFixture.sol";
 
-contract MugiIMDLedgerTestToken is ERC20 {
-    constructor() ERC20("Ledger test token", "TEST") {}
-    function mint(address account, uint256 amount) external { _mint(account, amount); }
-}
-
-contract MugiIMDLedgerSecurityTest is Test {
-    address internal constant ALICE = address(0xA11CE);
-    address internal constant ENGINE = address(0xE0919E);
-    MugiIMDLedger internal ledger;
-    address[10] internal tokens;
-
-    function setUp() public {
-        ledger = new MugiIMDLedger(address(this));
-        for (uint8 crew; crew < 10; ++crew) tokens[crew] = address(new MugiIMDLedgerTestToken());
-        ledger.initialize(tokens);
-        ledger.setExcluded(ENGINE, true);
-    }
-
-    function testCallBoundaryPreservesHookAndEngineInventoryExclusion() public {
+contract MugiIMDLedgerSecurityTest is MugiIMDLedgerFixture {
+    function testPremintedProtocolInventoryIsExcludedWithoutAnyTokenCallback() public {
         _mint(0, address(this), 100 ether);
         _mint(0, address(ledger), 7 ether);
         _mint(0, ENGINE, 50 ether);
         _mint(0, ALICE, 2 ether);
         assertEq(ledger.eligibleSupply(0), 2 ether * ledger.SCALE());
-
-        ledger.beforeBalanceChange(address(this), ALICE);
-        MugiIMDLedgerTestToken(tokens[0]).transfer(ALICE, 1 ether);
-        ledger.afterBalanceChange(0, address(this), ALICE, 1 ether);
+        _transfer(0, address(this), ALICE, 1 ether);
         assertEq(ledger.eligibleSupply(0), 3 ether * ledger.SCALE());
-        assertEq(MugiIMDLedgerTestToken(tokens[0]).balanceOf(address(this)), 99 ether);
+        _transfer(0, ALICE, ENGINE, 2 ether);
+        assertEq(ledger.eligibleSupply(0), 1 ether * ledger.SCALE());
+        _burn(0, ALICE, 1 ether);
+        assertEq(ledger.eligibleSupply(0), 0);
     }
 
-    function testLedgerCannotReclassifyHookOrItsOwnAddressAsEligible() public {
-        vm.expectRevert(MugiIMDLedger.InvalidConfiguration.selector);
-        ledger.setExcluded(address(this), false);
-        vm.expectRevert(MugiIMDLedger.InvalidConfiguration.selector);
-        ledger.setExcluded(address(ledger), false);
-        vm.expectRevert(MugiIMDLedger.InvalidConfiguration.selector);
-        ledger.setExcluded(address(0), false);
-    }
-
-    function testAllLedgerMutatorsRejectOutsideCaller() public {
+    function testAllRemainingLedgerMutatorsRejectOutsideCaller() public {
         vm.startPrank(ALICE);
         vm.expectRevert(MugiIMDLedger.Unauthorized.selector);
-        ledger.initialize(tokens);
+        ledger.recordElimination(0, 1023, 1 ether, 100);
         vm.expectRevert(MugiIMDLedger.Unauthorized.selector);
-        ledger.initializeSeason(tokens, address(0), ENGINE, address(0), address(0), address(0));
+        ledger.finalizeMigration(0, 100);
         vm.expectRevert(MugiIMDLedger.Unauthorized.selector);
-        ledger.setExcluded(ALICE, true);
-        vm.expectRevert(MugiIMDLedger.Unauthorized.selector);
-        ledger.beforeBalanceChange(ALICE, ENGINE);
-        vm.expectRevert(MugiIMDLedger.Unauthorized.selector);
-        ledger.afterBalanceChange(0, ALICE, ENGINE, 1 ether);
-        vm.expectRevert(MugiIMDLedger.Unauthorized.selector);
-        ledger.recordElimination(0, 1023, 1 ether);
-        vm.expectRevert(MugiIMDLedger.Unauthorized.selector);
-        ledger.finalizeMigration(0);
-        vm.expectRevert(MugiIMDLedger.Unauthorized.selector);
-        ledger.emergencyFinalize(1023, 1 ether);
+        ledger.emergencyFinalize(1023, 1 ether, 100);
         vm.expectRevert(MugiIMDLedger.Unauthorized.selector);
         ledger.claimTokens(ALICE);
         vm.expectRevert(MugiIMDLedger.Unauthorized.selector);
@@ -75,29 +38,80 @@ contract MugiIMDLedgerSecurityTest is Test {
         vm.stopPrank();
     }
 
+    function testRemovedInitializationReclassificationAndCallbackSelectorsAreUnavailableEvenToHook() public {
+        (bool ok,) = address(ledger).call(abi.encodeWithSignature("initialize(address[10])", tokens));
+        assertFalse(ok);
+        (ok,) = address(ledger).call(abi.encodeWithSignature(
+            "initializeSeason(address[10],address,address,address,address,address)",
+            tokens, AIRDROP, ENGINE, TEAM, COMMUNITY, MANAGER
+        ));
+        assertFalse(ok);
+        (ok,) = address(ledger).call(abi.encodeWithSignature("setExcluded(address,bool)", ALICE, true));
+        assertFalse(ok);
+        (ok,) = address(ledger).call(abi.encodeWithSignature("beforeBalanceChange(address,address)", ALICE, BOB));
+        assertFalse(ok);
+        (ok,) = address(ledger).call(abi.encodeWithSignature(
+            "afterBalanceChange(uint8,address,address,uint256)", uint8(0), ALICE, BOB, 1
+        ));
+        assertFalse(ok);
+    }
+
     function testExcludedProtocolInventoryCannotCaptureEliminationRewards() public {
-        _mint(0, address(this), 100 ether);
+        _mint(0, address(this), 1e30);
         _mint(0, ENGINE, 50 ether);
         _mint(0, ALICE, 2 ether);
-        _mint(1, address(this), 100 ether);
+        _mint(1, address(this), 1e30);
         _mint(1, ENGINE, 50 ether);
         _mint(1, ALICE, 1 ether);
-        ledger.recordElimination(0, 1023, 9 ether);
+        _eliminate(0, 9 ether);
         (, uint256 hookRewards,) = ledger.previewAccount(address(this));
         (, uint256 engineRewards,) = ledger.previewAccount(ENGINE);
         (, uint256 playerRewards,) = ledger.previewAccount(ALICE);
         assertEq(hookRewards, 0);
         assertEq(engineRewards, 0);
-        assertEq(playerRewards, 1 ether); // One of nine survivor shares belongs wholly to its eligible holder.
+        assertEq(playerRewards, 1 ether);
         (uint256[10] memory claimable,,) = ledger.previewAccount(ALICE);
-        assertGt(claimable[1], 0);
+        assertEq(claimable[1], uint256(1 ether) / 6);
         (uint256[10] memory protocolClaimable,,) = ledger.previewAccount(address(this));
         assertEq(protocolClaimable[1], 0);
     }
 
-    function _mint(uint8 crew, address account, uint256 amount) private {
-        ledger.beforeBalanceChange(address(0), account);
-        MugiIMDLedgerTestToken(tokens[crew]).mint(account, amount);
-        ledger.afterBalanceChange(crew, address(0), account, amount);
+    function testCutoffCannotBeFutureRepeatedOrEarlierThanPriorAccountingEvent() public {
+        _mint(0, ALICE, 1 ether);
+        vm.expectRevert(MugiIMDLedger.InvalidRound.selector);
+        ledger.recordElimination(0, alive, 0, 0);
+        vm.expectRevert(MugiIMDLedger.InvalidRound.selector);
+        ledger.recordElimination(0, alive, 0, uint64(block.timestamp + 1));
+        _eliminate(0, 0); // cutoff101, recorded102.
+        vm.expectRevert(MugiIMDLedger.InvalidRound.selector);
+        ledger.recordElimination(1, alive, 0, 101);
+        vm.expectRevert(MugiIMDLedger.InvalidRound.selector);
+        ledger.recordElimination(1, alive, 0, 102);
+        _eliminate(1, 0);
+    }
+
+    function testMaterializationAtOrAfterProposedCutoffCannotBeReusedAsAnEarlierVirtualSnapshot() public {
+        _mint(0, ALICE, 12 ether);
+        _eliminate(0, 0);
+        vm.warp(110);
+        uint256 amount = ledger.claimToken(ALICE, 1, 1 ether);
+        _transfer(1, address(this), ALICE, amount);
+        vm.warp(120);
+        vm.expectRevert(MugiIMDLedger.InvalidRound.selector);
+        ledger.recordElimination(1, alive, 0, 109);
+        vm.expectRevert(MugiIMDLedger.InvalidRound.selector);
+        ledger.recordElimination(1, alive, 0, 110);
+        _eliminateAt(1, 0, 111);
+    }
+
+    function testZeroTokenClaimsAndEthSynchronizationDoNotChangeVirtualSnapshotTiming() public {
+        _mint(0, ALICE, 12 ether);
+        _mint(1, ALICE, 1 ether);
+        _eliminate(0, 9 ether);
+        vm.warp(120);
+        ledger.claimToken(ALICE, 1, 0);
+        assertEq(ledger.claimEth(ALICE), 1 ether);
+        // Token materialization was zero; ETH-only synchronization cannot invalidate cutoff110.
+        _eliminateAt(1, 0, 110);
     }
 }

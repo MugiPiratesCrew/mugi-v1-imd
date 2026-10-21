@@ -69,7 +69,7 @@ contract MugiSwapRouterTest is MugiGameTestBase {
     function setUp() public {
         vm.warp(1_800_000_000);
         _setup(new PoolManager(address(this)));
-        playerRouter = new MugiSwapRouter(game);
+        playerRouter = new MugiSwapRouter(game, manager);
         vm.deal(ALICE, 10 ether);
     }
 
@@ -184,7 +184,7 @@ contract MugiSwapRouterTest is MugiGameTestBase {
         vm.expectRevert(MugiSwapRouter.InvalidAmount.selector);
         playerRouter.sell(0, uint256(uint128(type(int128).max)) + 1, 0, uint64(block.timestamp));
         vm.expectRevert(MugiSwapRouter.InvalidConfiguration.selector);
-        new MugiSwapRouter(MugiGameHook(payable(address(1))));
+        new MugiSwapRouter(MugiGameHook(payable(address(0))), manager);
     }
 
     function testUnsolicitedCallbacksRejectedIncludingManagerWithoutPendingTrade() public {
@@ -245,15 +245,10 @@ contract MugiSwapRouterTest is MugiGameTestBase {
         assertFalse(accepted, "unrequested ETH is rejected");
     }
 
-    function testOfficialHookPauseCutoffAndEliminationCannotBeBypassed() public {
+    function testOfficialRoundCutoffAndEliminationCannotBeBypassed() public {
         vm.startPrank(ALICE);
         MugiCrewToken(crew[0]).approve(address(playerRouter), type(uint256).max);
         vm.stopPrank();
-        game.setPaused(true);
-        vm.prank(ALICE);
-        vm.expectRevert();
-        playerRouter.buy{value: 1 ether}(0, 1, type(uint64).max);
-        game.setPaused(false);
         vm.warp(game.nextCutoff());
         vm.prank(ALICE);
         vm.expectRevert();

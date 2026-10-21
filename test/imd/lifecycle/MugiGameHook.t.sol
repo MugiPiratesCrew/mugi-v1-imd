@@ -4,6 +4,8 @@ pragma solidity ^0.8.26;
 // IMD modular regression adapted from v1/test/game/MugiGameHook.t.sol.
 // Exercises CALL-module custody with the same season/accounting assertions.
 
+import {MugiIMDLedger} from "../../../src/imd/modules/MugiIMDLedger.sol";
+import {MugiIMDV4Engine} from "../../../src/imd/modules/MugiIMDV4Engine.sol";
 import {MugiIMDAccountingFactory} from "../../../src/imd/MugiIMDAccountingFactory.sol";
 import {MugiIMDEngineFactory} from "../../../src/imd/MugiIMDEngineFactory.sol";
 import {Test} from "forge-std/Test.sol";
@@ -73,10 +75,8 @@ abstract contract MugiGameTestBase is Test {
         manager = manager_;
         vm.deal(address(this), 100_000 ether);
         game = _deployGame(manager);
-        factory = new MugiCrewFactory();
-        crew = factory.deployCrewSet(address(game), 1);
-        airdrop = new MugiAirdrop(address(game), vm.addr(ATTESTOR_KEY), SUPPLY, crew);
-        game.configure(crew, airdrop, _makeRandomness(address(game)), _makeVerifier(address(game)));
+        for (uint8 i; i < 10; ++i) crew[i] = game.tokens(i);
+        airdrop = game.airdrop();
         // `block.timestamp` can be common-subexpression optimized within this
         // setup transaction. Move past the permissionless seven-day launch
         // condition before constructing signed registration/claim deadlines.
@@ -97,22 +97,35 @@ abstract contract MugiGameTestBase is Test {
     }
 
     function _deployGame(IPoolManager manager_) internal virtual returns (MugiGameHook deployed) {
-        address hookAddress = address(uint160(0x1234000000) | uint160(0x2aec));
-        deployCodeTo(
-            "MugiIMDGameHook.sol:MugiIMDGameHook",
-            abi.encode(address(this), manager_, TEAM, COMMUNITY, address(this), SUPPLY),
-            hookAddress
-        );
-        deployed = MugiGameHook(payable(hookAddress));
-        _bindModules(deployed);
+        (deployed,,) = _deployGameAt(address(uint160(0x1234000000) | uint160(0x2aec)), SUPPLY, manager_);
     }
 
-    function _bindModules(MugiGameHook target) internal {
-        MugiIMDAccountingFactory accounting = new MugiIMDAccountingFactory();
-        MugiIMDAccountingFactory.Modules memory modules = accounting.deployForHook(address(target));
-        MugiIMDEngineFactory engines = new MugiIMDEngineFactory();
-        target.bindAccounting(modules.ledger, modules.budgets, modules.prices, engines.deployForHook(address(target), target.poolManager()));
+    function _deployGameAt(address hookAddress, uint256 supply, IPoolManager manager_)
+        internal returns (MugiGameHook deployed, address[10] memory assets, MugiAirdrop drop)
+    {
+        MugiCrewFactory crews = new MugiCrewFactory(address(this));
+        assets = crews.deployCrewSet(hookAddress, supply);
+        drop = new MugiAirdrop(hookAddress, vm.addr(ATTESTOR_KEY), supply, assets);
+        MugiIMDV4Engine engine = new MugiIMDV4Engine(hookAddress, manager_);
+        MugiIMDLedger.Configuration memory lc = abi.decode(
+            abi.encode(hookAddress, assets, address(drop), address(engine), TEAM, COMMUNITY, address(manager_)),
+            (MugiIMDLedger.Configuration)
+        );
+        MugiIMDLedger ledger = new MugiIMDLedger(lc);
+        MugiBuybacks budgets = new MugiBuybacks(hookAddress);
+        MugiPriceOracle prices = new MugiPriceOracle(hookAddress);
+        MugiGameHook.Configuration memory c = MugiGameHook.Configuration({
+            owner: address(this), manager: address(manager_), team: TEAM, community: COMMUNITY,
+            v2MigrationTarget: _migrationTarget(), initialSupply: supply, ledger: address(ledger),
+            engine: address(engine), budgets: address(budgets), prices: address(prices),
+            randomnessProvider: _makeRandomness(hookAddress), imdVerifier: _makeVerifier(hookAddress),
+            airdrop: address(drop), crewFactory: address(crews)
+        });
+        deployCodeTo("MugiIMDGameHook.sol:MugiIMDGameHook", abi.encode(c), hookAddress);
+        deployed = MugiGameHook(payable(hookAddress));
     }
+
+    function _migrationTarget() internal view virtual returns (address) { return address(this); }
 
     function _makeRandomness(address) internal virtual returns (address) {
         randomness = new GameRandomnessMock();
@@ -174,7 +187,10 @@ abstract contract MugiGameTestBase is Test {
 
     function _assertSolvent() internal view {
         assertGe(address(game).balance + game.unredeemedGameFees(), game.reservedPlayerEth() + game.teamEth());
-        for (uint8 i; i < 10; ++i) assertGe(MugiCrewToken(crew[i]).balanceOf(address(game)), game.escrowBacking(i));
+        for (uint8 i; i < 10; ++i) {
+            assertGe(MugiCrewToken(crew[i]).balanceOf(address(game)),
+                game.escrowBacking(i) + game.unreleasedReserve(i) + game.teamTokens(i));
+        }
     }
 
     function _fundTreasure(uint8 id) internal {
@@ -192,7 +208,7 @@ contract MugiGameHookTest is MugiGameTestBase {
         assertEq(game.seededMask(), 1023);
         assertEq(uint8(game.phase()), uint8(MugiGameHook.Phase.Live));
         for (uint8 i; i < 10; ++i) {
-            assertEq(MugiCrewToken(crew[i]).totalSupply(), SUPPLY);
+            assertEq(MugiCrewToken(crew[i]).totalSupply(), MugiCrewToken(crew[i]).reserveCap());
             assertGt(game.positionLiquidity(i), 0);
         }
         assertEq(MugiCrewToken(crew[0]).balanceOf(ALICE), SUPPLY / 1000);
@@ -229,10 +245,9 @@ contract MugiGameHookTest is MugiGameTestBase {
         assertEq(game.treasure(0), 0);
     }
 
-    function testFixedCutoffFreezesTransfersAndSwapsBeforeRequest() public {
+    function testFixedCutoffAllowsTransfersButClosesOfficialRoundAndMaterialization() public {
         vm.warp(game.nextCutoff());
         vm.prank(ALICE);
-        vm.expectRevert(MugiGameHook.TransferFrozen.selector);
         MugiCrewToken(crew[0]).transfer(BOB, 1);
         PoolKey memory key = game.poolKey(0);
         vm.expectRevert();
@@ -301,7 +316,6 @@ contract MugiGameHookTest is MugiGameTestBase {
         game.claimTokens();
         assertEq(MugiCrewToken(crew[1]).balanceOf(ALICE), aliceTokens[1]);
         vm.prank(ALICE);
-        vm.expectRevert(MugiGameHook.TransferFrozen.selector);
         MugiCrewToken(crew[0]).transfer(BOB, 1);
         _assertSolvent();
     }
@@ -504,22 +518,11 @@ contract MugiGameHookTest is MugiGameTestBase {
 
     function testOwnerCanAbortOnlyBeforeLaunchAndRecoverSeededEth() public {
         address hookAddress = address(uint160(0x1235000000) | uint160(0x2aec));
-        deployCodeTo(
-            "MugiIMDGameHook.sol:MugiIMDGameHook",
-            abi.encode(address(this), manager, TEAM, COMMUNITY, address(this), SUPPLY),
-            hookAddress
-        );
-        MugiGameHook prelaunch = MugiGameHook(payable(hookAddress));
-        _bindModules(prelaunch);
-        MugiCrewFactory prelaunchFactory = new MugiCrewFactory();
-        address[10] memory prelaunchCrew = prelaunchFactory.deployCrewSet(address(prelaunch), 2);
-        MugiAirdrop prelaunchAirdrop = new MugiAirdrop(address(prelaunch), vm.addr(ATTESTOR_KEY), SUPPLY, prelaunchCrew);
-        GameRandomnessMock prelaunchRandomness = new GameRandomnessMock();
-        prelaunch.configure(prelaunchCrew, prelaunchAirdrop, address(prelaunchRandomness), address(0));
+        (MugiGameHook prelaunch, address[10] memory prelaunchCrew,) = _deployGameAt(hookAddress, SUPPLY, manager);
 
         uint256 ownerBefore = address(this).balance;
         prelaunch.seedPool{value: 7 ether}(0);
-        assertEq(MugiCrewToken(prelaunchCrew[0]).totalSupply(), SUPPLY);
+        assertEq(MugiCrewToken(prelaunchCrew[0]).totalSupply(), MugiCrewToken(prelaunchCrew[0]).reserveCap());
 
         prelaunch.abortPrelaunch();
 

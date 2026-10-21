@@ -1,55 +1,40 @@
-# Mugi V1 IMD source admission candidate
+# Mugi V1 IMD compatibility candidate
 
-This is an unsubmitted follow-up Foundry source candidate for Mugi V1 IMD. Source
-admission remains PENDING. Paid job
-`6a953f2f-d28d-46cc-91a4-f348efed5c10` reviews the earlier source pin
-`028d37769edce6e38324182b8909392a9852af16`; accepting its audit report does not
-accept deployment. The preceding job
-`a6715145-76db-498f-9ca9-a11ed38d82a8` was blocked without deploying contracts.
-See `docs/validation/vrf-stall-repair/RECOVERY.md` for the revised lifecycle and
-`docs/IMD_FINDINGS_RESPONSE.md` for the original findings response. The current
-follow-up repairs, complete owner-trust disclosures and unresolved platform-policy
-conflicts are recorded in `docs/IMD_FOLLOWUP_RESPONSE.md`.
+This source implements the authorized V1 compatibility redesign: constructor-only
+finite token reserves, unrestricted wallet transfers with historical cutoff
+accounting, no owner pause, and constructor-bound game dependencies. The core
+nine-elimination game and future V2 protocol-fund handoff remain.
 
-The proposed manifest records four factories. They permit owner-authorized later
-deployment of the Mugi hook, ten crew tokens, airdrop, VRF adapter, IMD verifier,
-swap router, and ledger/buyback/oracle/liquidity-engine modules. The owner binds
-modules before configuration and seeding. They use ordinary CALL; no linked game
-libraries are needed. The lifecycle and every descendant must be disclosed to IMD.
-Acceptance of that lifecycle and its appearance in IMD Explorer remain unconfirmed.
-The source import must preserve the game token's restricted transfer/mint/burn rules.
-
-Build and run local tests with:
+Read [ADAPTATION.md](ADAPTATION.md) for the exact changes, reserve supply effect,
+unchanged gameplay and remaining trust/admission limits. Read
+[the deployment graph](docs/IMD_CONSTRUCTOR_DEPLOYMENT.md) before preparing an IMD
+launch. The four owner-bound factories and all nineteen descendants are disclosed.
+The four-factory launch alone does not seed or activate the game.
 
 ```sh
 forge build
-forge test --match-contract MugiV1IMDDeploymentFactoryTest -vv
-forge test --match-contract MugiIMDStateModulesTest -vv
+forge test
+python3 scripts/check-compatible-artifacts.py
 ```
 
-The separate fork test requires MUGI_IMD_MAINNET_FORK_RPC in the local environment;
-MUGI_IMD_MAINNET_FORK_BLOCK optionally pins a block. It skips without an RPC.
-Run it with `forge test --match-contract MugiIMDProjectFactoryForkTest -vv`.
-It creates state locally on a fork; a fork result is not a public deployment.
+Fork suites require `MUGI_IMD_MAINNET_FORK_RPC` and optionally
+`MUGI_IMD_MAINNET_FORK_BLOCK`. Without the RPC they skip; local test success is
+not a public deployment. Compiler settings and dependencies remain unchanged:
+Solidity 0.8.26, Cancun, optimizer 200, via IR, bytecode hash none.
 
-Compiler: Solidity 0.8.26, Cancun, optimizer 200, via IR, bytecode hash none.
-The complete public constructor inputs are in `hook-constructor.json`. Rebuild
-and check the committed hook creation bytecode plus ABI-encoded arguments:
+Final validation: **144 V1 tests and one separate actual-V2 integration test passed**.
+See [the exact evidence and reproduction commands](docs/validation/compatible/VALIDATION.md).
 
-```sh
-python3 scripts/check-hook-commitment.py
-```
+Source admission remains pending. Prior paid job
+`6a953f2f-d28d-46cc-91a4-f348efed5c10` reviewed rejected source
+`028d37769edce6e38324182b8909392a9852af16`, not this redesign. Historical reports
+under `docs/validation` apply only to their recorded source pins.
 
-It checks the compiler settings, runtime/initcode size and `launch.json` commitment.
-No signatures, network writes or deployments occur. The script requires Python 3
-and Foundry (the submission verifier uses v1.8.3). Changing a constructor input or
-Solidity source requires an explicitly reviewed replacement commitment; maintainers
-can then regenerate it using `--write-manifest` before preparing a new request.
-The zero V2 target explicitly selects a one-time owner-selected future V2 receiver;
-a nonzero configured target is immutable and enforced. Team/community addresses
-and initial supply are public and unchanged from the prior request. No keys or
-private RPC URLs belong here.
-Inventory SHA-256 hashes cover every shipped file except inventory.json itself.
-Build products are not part of the source inventory. launch.json, if supplied,
-contains only validated public constructor values and standardized public notes.
-Third-party source licenses are preserved beside their respective dependencies.
+V2 remains separate. Normal finale retires unused reserve and keeps player ETH
+and token escrow in V1. A one-time V2 handoff sends only available protocol assets;
+players can still claim in V1 during its 30-day window. V2 receives these funds
+through its existing `receiveV1Finale` interface and launches independently.
+No automatic holder-token swap is introduced.
+
+No credentials/private RPC URLs belong in this repository. No explorer source
+verification or public deployment is claimed by these documents.

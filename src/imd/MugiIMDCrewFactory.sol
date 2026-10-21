@@ -2,58 +2,42 @@
 pragma solidity ^0.8.26;
 
 import {MugiIMDCrewToken} from "./MugiIMDCrewToken.sol";
+import {MugiIMDDeploymentAddresses} from "./libraries/MugiIMDDeploymentAddresses.sol";
 
-/// @notice Deterministic full-code ten-token deployment for the IMD route.
-/// @dev No implementation contract or proxy is used. A duplicate request returns
-/// the same set, so third parties cannot change an owner's predicted crew set.
+/// @notice Owner-bound, single-season creation of ten fully configured tokens.
+/// @dev CREATE nonces 1..10 are independent of the future hook's address and
+/// initcode, breaking the constructor-dependency cycle without an initializer.
 contract MugiIMDCrewFactory {
-    mapping(address hook => mapping(uint256 seasonId => address[10] tokens)) private _crewSets;
+    address public immutable owner;
+    address public hook;
+    address[10] public tokens;
 
-    error InvalidHook();
-    event CrewSetDeployed(address indexed hook, uint256 indexed seasonId, address[10] tokens);
+    error Unauthorized();
+    error InvalidConfiguration();
+    error AlreadyDeployed();
+    event CrewSetDeployed(address indexed hook, uint256 initialSupply, address[10] tokens);
 
-    function deployCrewSet(address hook, uint256 seasonId) external returns (address[10] memory tokens) {
-        if (hook.code.length == 0) revert InvalidHook();
-        tokens = _crewSets[hook][seasonId];
-        if (tokens[0] != address(0)) return tokens;
-        (string[10] memory names, string[10] memory symbols) = _metadata();
+    constructor(address owner_) {
+        if (owner_ == address(0)) revert InvalidConfiguration();
+        owner = owner_;
+    }
+
+    function predictCrewSet() public view returns (address[10] memory) {
+        return MugiIMDDeploymentAddresses.crews(address(this));
+    }
+
+    function deployCrewSet(address futureHook, uint256 initialSupply) external returns (address[10] memory result) {
+        if (msg.sender != owner) revert Unauthorized();
+        if (hook != address(0)) revert AlreadyDeployed();
+        if (futureHook == address(0)) revert InvalidConfiguration();
+        hook = futureHook;
         for (uint8 crew; crew < 10; ++crew) {
-            tokens[crew] = address(
-                new MugiIMDCrewToken{salt: _salt(hook, seasonId, crew)}(names[crew], symbols[crew], crew, hook)
-            );
+            result[crew] = address(new MugiIMDCrewToken(crew, futureHook, initialSupply));
+            assert(result[crew] == MugiIMDDeploymentAddresses.child(address(this), crew + 1));
         }
-        _crewSets[hook][seasonId] = tokens;
-        emit CrewSetDeployed(hook, seasonId, tokens);
+        tokens = result;
+        emit CrewSetDeployed(futureHook, initialSupply, result);
     }
 
-    function crewSet(address hook, uint256 seasonId) external view returns (address[10] memory) {
-        return _crewSets[hook][seasonId];
-    }
-
-    function predictCrewSet(address hook, uint256 seasonId) external view returns (address[10] memory tokens) {
-        (string[10] memory names, string[10] memory symbols) = _metadata();
-        for (uint8 crew; crew < 10; ++crew) {
-            bytes32 initHash = keccak256(
-                abi.encodePacked(
-                    type(MugiIMDCrewToken).creationCode, abi.encode(names[crew], symbols[crew], crew, hook)
-                )
-            );
-            tokens[crew] = address(
-                uint160(
-                    uint256(
-                        keccak256(abi.encodePacked(bytes1(0xff), address(this), _salt(hook, seasonId, crew), initHash))
-                    )
-                )
-            );
-        }
-    }
-
-    function _metadata() private pure returns (string[10] memory names, string[10] memory symbols) {
-        names = ["Luffy", "Zoro", "Nami", "Usopp", "Sanji", "Chopper", "Robin", "Franky", "Brook", "Jinbe"];
-        symbols = ["MLFY", "MZRO", "MNMI", "MUSP", "MSNJ", "MCHP", "MRBN", "MFRK", "MBRK", "MJNB"];
-    }
-
-    function _salt(address hook, uint256 seasonId, uint8 crew) private pure returns (bytes32) {
-        return keccak256(abi.encode("MUGI_IMD_CREW", hook, seasonId, crew));
-    }
+    function allTokens() external view returns (address[10] memory) { return tokens; }
 }

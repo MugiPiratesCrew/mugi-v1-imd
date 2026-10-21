@@ -1,5 +1,10 @@
 # Response to IMD audit, 21 October 2026
 
+Historical response for source `028d37769edce6e38324182b8909392a9852af16`.
+The current compatibility candidate is defined by [ADAPTATION.md](../ADAPTATION.md).
+Any retained mint/freeze/pause/bootstrap requirements below describe that older
+source and are superseded; current validation is under `validation/compatible/`.
+
 Previous request transaction:
 `0xa8f865165061fb43d5fff15c13152830a64718adcb8788c76c7d9233b9d5e7e7`.
 Previous source: `56673aef8e55af52eec99c2567d272b7f01b8a65`.

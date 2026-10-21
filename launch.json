@@ -3,24 +3,28 @@
   "contracts": [
     {
       "contract": "MugiIMDCrewFactory",
-      "constructorArgs": []
+      "constructorArgs": [
+        "0x20714d50f4675c366de30b603728a90ddddb240f"
+      ]
     },
     {
       "contract": "MugiV1IMDDeploymentFactory",
       "constructorArgs": [
-        "0x20714d50f4675c366de30b603728a90ddddb240f",
-        "$contract:MugiIMDCrewFactory",
-        "0x08f972c762e16058099e4d4b614fe24f360fd1780af043308c475cab65d39b3d"
+        "0x20714d50f4675c366de30b603728a90ddddb240f"
       ]
     },
     {
       "contract": "MugiIMDAccountingFactory",
-      "constructorArgs": []
+      "constructorArgs": [
+        "0x20714d50f4675c366de30b603728a90ddddb240f"
+      ]
     },
     {
       "contract": "MugiIMDEngineFactory",
-      "constructorArgs": []
+      "constructorArgs": [
+        "0x20714d50f4675c366de30b603728a90ddddb240f"
+      ]
     }
   ],
-  "notes": "Four recorded factories; nineteen later application contracts need owner deployment, binding and setup. Review all descendants and intentional minting, lifecycle freezes and bounded pause. Admission is pending. Individual descendant Explorer entries are not promised. No explorer source verification."
+  "notes": "Four owner-bound operational factories, each with one static owner constructor argument; no constructor dependency calls, code checks or child creation. Disclose and review all nineteen later full-code application descendants and five owner creation transactions. Every application is fully constructor-configured: no initialize/configure/bindAccounting or mutable dependencies. Tokens have constructor-only fixed reserves, no later mint, no transfer freeze or owner pause; game elimination/rewards use timestamp cutoffs and bounded reserve releases. V1 competition, reward distribution and V2 handoff remain. Raw hook creation code is pinned by the main factory constructor; full hook initcode/salt are committed during module creation. See docs/IMD_CONSTRUCTOR_DEPLOYMENT.md. Remote admission and deployment remain unproven. Factory registry entries do not individually index descendants. No explorer source verification."
 }

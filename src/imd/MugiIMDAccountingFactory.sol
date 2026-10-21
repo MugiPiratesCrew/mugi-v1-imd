@@ -4,29 +4,46 @@ pragma solidity ^0.8.26;
 import {MugiIMDLedger} from "./modules/MugiIMDLedger.sol";
 import {MugiIMDBuybacks} from "./modules/MugiIMDBuybacks.sol";
 import {MugiIMDPriceOracle} from "./modules/MugiIMDPriceOracle.sol";
+import {MugiIMDDeploymentAddresses} from "./libraries/MugiIMDDeploymentAddresses.sol";
 
-/// @notice Deploys immutable, hook-authorized accounting modules after hook creation.
-/// @dev No assets or admin rights are held here. Anyone may create the canonical
-/// set for a hook; only that hook can mutate it. Hook owner binds the set once.
+/// @notice Creates one fully constructor-configured accounting graph.
+/// @dev No assets, hook authority, setters or postdeployment binding are held here.
 contract MugiIMDAccountingFactory {
     struct Modules {
         MugiIMDLedger ledger;
         MugiIMDBuybacks budgets;
         MugiIMDPriceOracle prices;
     }
-    mapping(address => Modules) public modules;
-    error InvalidHook();
+    address public immutable owner;
+    Modules public modules;
+
+    error Unauthorized();
+    error InvalidConfiguration();
+    error AlreadyDeployed();
     event ModulesCreated(address indexed hook, address ledger, address budgets, address prices);
 
-    function deployForHook(address hook) external returns (Modules memory result) {
-        if (hook.code.length == 0) revert InvalidHook();
-        result = modules[hook];
-        if (address(result.ledger) != address(0)) return result;
-        bytes32 salt = bytes32(uint256(uint160(hook)));
-        result.ledger = new MugiIMDLedger{salt: salt}(hook);
-        result.budgets = new MugiIMDBuybacks{salt: salt}(hook);
-        result.prices = new MugiIMDPriceOracle{salt: salt}(hook);
-        modules[hook] = result;
-        emit ModulesCreated(hook, address(result.ledger), address(result.budgets), address(result.prices));
+    constructor(address owner_) {
+        if (owner_ == address(0)) revert InvalidConfiguration();
+        owner = owner_;
+    }
+
+    function predictModules() public view returns (Modules memory result) {
+        result.ledger = MugiIMDLedger(MugiIMDDeploymentAddresses.child(address(this), 1));
+        result.budgets = MugiIMDBuybacks(MugiIMDDeploymentAddresses.child(address(this), 2));
+        result.prices = MugiIMDPriceOracle(MugiIMDDeploymentAddresses.child(address(this), 3));
+    }
+
+    function deployForHook(MugiIMDLedger.Configuration calldata c) external returns (Modules memory result) {
+        if (msg.sender != owner) revert Unauthorized();
+        if (address(modules.ledger) != address(0)) revert AlreadyDeployed();
+        result.ledger = new MugiIMDLedger(c);
+        result.budgets = new MugiIMDBuybacks(c.hook);
+        result.prices = new MugiIMDPriceOracle(c.hook);
+        Modules memory predicted = predictModules();
+        assert(address(result.ledger) == address(predicted.ledger));
+        assert(address(result.budgets) == address(predicted.budgets));
+        assert(address(result.prices) == address(predicted.prices));
+        modules = result;
+        emit ModulesCreated(c.hook, address(result.ledger), address(result.budgets), address(result.prices));
     }
 }

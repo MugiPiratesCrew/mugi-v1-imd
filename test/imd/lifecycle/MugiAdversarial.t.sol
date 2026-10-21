@@ -109,10 +109,12 @@ contract MugiAdversarialTest is MugiGameTestBase {
 
     function testUnregisteredCallerCannotForgeTokenBalanceAccounting() public {
         uint256 beforeSupply = game.eligibleSupply(1);
-        vm.expectRevert(MugiGameHook.Unauthorized.selector);
-        game.beforeTokenTransfer(1, address(0), BOB, 1_000_000 ether);
-        vm.expectRevert(MugiGameHook.Unauthorized.selector);
-        game.afterTokenTransfer(1, address(0), BOB, 1_000_000 ether);
+        (bool beforeOK,) = address(game).call(abi.encodeWithSignature(
+            "beforeTokenTransfer(uint8,address,address,uint256)", 1, address(0), BOB, 1_000_000 ether));
+        (bool afterOK,) = address(game).call(abi.encodeWithSignature(
+            "afterTokenTransfer(uint8,address,address,uint256)", 1, address(0), BOB, 1_000_000 ether));
+        assertFalse(beforeOK, "removed callback cannot forge accounting");
+        assertFalse(afterOK, "removed callback cannot forge accounting");
         assertEq(game.eligibleSupply(1), beforeSupply);
     }
 
@@ -149,15 +151,13 @@ contract MugiAdversarialTest is MugiGameTestBase {
         _assertSolvent();
     }
 
-    function testExpiredPauseDoesNotBlockFinalizationMigrationOrEarlierRewards() public {
+    function testFinalizationMigrationPreservesEarlierRewardsWithoutPauseCapability() public {
         _fundTreasure(0);
-        game.setPaused(true);
         for (uint8 i; i < 9; ++i) _round(0);
         (, uint256 earlierReward,) = game.previewAccount(BOB);
         assertGt(earlierReward, 0);
         vm.warp(game.nextCutoff());
         game.finalize();
-        assertFalse(game.paused());
         (, uint256 owed,) = game.previewAccount(BOB);
         assertEq(owed, earlierReward);
         vm.prank(BOB);
@@ -167,7 +167,6 @@ contract MugiAdversarialTest is MugiGameTestBase {
         uint256 pendingMigration = address(game).balance - game.teamEth() - game.reservedPlayerEth();
         game.migrateToV2(address(this));
         assertEq(migratedEth, pendingMigration);
-        assertFalse(game.paused());
         _assertSolvent();
     }
 
@@ -211,17 +210,8 @@ contract MugiAdversarialTest is MugiGameTestBase {
 
     function testSubLiquidityUnitRemainderDoesNotPermanentlyFreezeSettlement() public {
         address microAddress = address(uint160(0x5678000000) | uint160(0x2aec));
-        deployCodeTo(
-            "MugiIMDGameHook.sol:MugiIMDGameHook",
-            abi.encode(address(this), manager, TEAM, COMMUNITY, address(this), uint256(1000)),
-            microAddress
-        );
-        MugiGameHook micro = MugiGameHook(payable(microAddress));
-        _bindModules(micro);
-        address[10] memory microTokens = factory.deployCrewSet(address(micro), 1);
-        MugiAirdrop microDrop = new MugiAirdrop(address(micro), vm.addr(ATTESTOR_KEY), 1000, microTokens);
-        GameRandomnessMock microRandomness = new GameRandomnessMock();
-        micro.configure(microTokens, microDrop, address(microRandomness), address(0));
+        (MugiGameHook micro,,) = _deployGameAt(microAddress, 1000, manager);
+        GameRandomnessMock microRandomness = randomness;
         for (uint8 i; i < 10; ++i) micro.seedPool{value: i == 0 ? 20 : 1000}(i);
         vm.warp(block.timestamp + 7 days);
         micro.launch();

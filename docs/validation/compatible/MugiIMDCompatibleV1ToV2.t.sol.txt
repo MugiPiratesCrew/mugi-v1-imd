@@ -1,0 +1,167 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.26;
+
+import {MugiGameTestBase} from "candidate/test/imd/lifecycle/MugiGameHook.t.sol";
+import {MugiIMDGameHook} from "candidate/src/imd/MugiIMDGameHook.sol";
+import {MugiCrewToken} from "candidate/src/game/MugiCrewToken.sol";
+import {PoolManager} from "v4-core/src/PoolManager.sol";
+import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
+import {MugiIMDVerifier as V2Verifier} from "v1/src/game/MugiIMDVerifier.sol";
+import {MugiV2Hook} from "v2/src/game/MugiV2Hook.sol";
+import {MugiV2Token} from "v2/src/game/MugiV2Token.sol";
+import {MugiV2Router, IMugiV2Market} from "v2/src/game/MugiV2Router.sol";
+
+/// @notice Local integration of the compatible V1 candidate with the unchanged,
+/// existing fixed-supply V2 contracts. No owner-mintable V2 token is used.
+/// @dev Uses a real local PoolManager and swaps; the inherited VRF mock injects
+/// words. Hook addresses are installed with Foundry's deployCodeTo fixture.
+/// This proves API/custody compatibility, not public deployment or IMD admission.
+contract MugiIMDCompatibleV1ToV2Test is MugiGameTestBase {
+    address private constant V2_BUYER = address(0xDA7E);
+    uint256 private constant V2_SUPPLY = 1_000_000_000 ether;
+    MugiV2Hook private nextGame;
+
+    function setUp() public {
+        vm.warp(1_800_000_000);
+        _setup(new PoolManager(address(this)));
+    }
+
+    function _migrationTarget() internal pure override returns (address) { return address(0); }
+
+    function _deployGame(IPoolManager manager_) internal override returns (MugiIMDGameHook deployed) {
+        deployed = super._deployGame(manager_);
+        address nextAddress = address(uint160(0x7734000000) | uint160(0x2aec));
+        deployCodeTo("MugiV2Hook.sol:MugiV2Hook", abi.encode(address(this), manager_, TEAM), nextAddress);
+        nextGame = MugiV2Hook(payable(nextAddress));
+        nextGame.setV1MigrationSource(address(deployed));
+        assertEq(address(nextGame.token()), address(0), "V2 token intentionally unconfigured before V1 launch");
+    }
+
+    function testCompatibleV1FullSeasonHandoffRealV2SeedLaunchTradeAndOldClaims() public {
+        for (uint8 round; round < 9; ++round) {
+            _fundTreasure(round); // Real swaps fund the eventual player ETH claims.
+            _round(0); // Deterministically eliminate crews0..8 through the normal recorded VRF outcome.
+            assertEq(game.eliminations(), round + 1);
+            assertEq(game.unreleasedReserve(round), 0, "defeated premint reserve retired");
+        }
+        assertEq(game.aliveMask(), uint16(1 << 9));
+        uint256 unused = game.unreleasedReserve(9);
+        uint256 supplyBeforeFinale = MugiCrewToken(crew[9]).totalSupply();
+        vm.warp(game.nextCutoff());
+        game.finalize();
+        assertEq(uint8(game.phase()), uint8(MugiIMDGameHook.Phase.Finalized));
+        assertEq(game.unreleasedReserve(9), 0);
+        assertEq(MugiCrewToken(crew[9]).totalSupply(), supplyBeforeFinale - unused);
+        for (uint8 i; i < 10; ++i) assertEq(game.positionLiquidity(i), 0);
+        assertEq(game.unredeemedGameFees(), 0);
+        _assertSolvent();
+
+        uint256 playerEthReserve = game.reservedPlayerEth();
+        uint256 playerTokenReserve = game.escrowBacking(9);
+        uint256 teamEth = game.teamEth();
+        uint256 migrationEth = address(game).balance - playerEthReserve - teamEth;
+        uint256 migrationTokens = MugiCrewToken(crew[9]).balanceOf(address(game)) - playerTokenReserve;
+        (uint256[10] memory aliceTokens, uint256 aliceEth,) = game.previewAccount(ALICE);
+        (uint256[10] memory bobTokens, uint256 bobEth,) = game.previewAccount(BOB);
+        assertGt(playerEthReserve, 0);
+        assertGt(playerTokenReserve, 0);
+        assertGt(migrationEth, 0);
+        assertGt(migrationTokens, 0);
+        assertGt(aliceTokens[9], 0);
+        assertGt(aliceEth, 0);
+        assertGt(bobTokens[9], 0);
+        assertGt(bobEth, 0);
+
+        vm.expectRevert(MugiIMDGameHook.Unauthorized.selector);
+        vm.prank(ALICE);
+        game.migrateToV2(address(nextGame));
+        game.migrateToV2(address(nextGame));
+        assertTrue(game.migrated());
+        assertTrue(nextGame.v1MigrationReceived());
+        assertEq(nextGame.v1MigrationSource(), address(game));
+        assertEq(nextGame.v1MigrationCrew(), 9);
+        assertEq(nextGame.v1MigrationToken(), crew[9]);
+        assertEq(nextGame.v1MigrationEth(), migrationEth);
+        assertEq(nextGame.v1MigrationTokens(), migrationTokens);
+        assertEq(MugiCrewToken(crew[9]).balanceOf(address(nextGame)), migrationTokens);
+        assertEq(MugiCrewToken(crew[9]).balanceOf(address(game)), playerTokenReserve);
+        assertEq(address(game).balance, playerEthReserve + teamEth);
+        assertEq(address(nextGame.token()), address(0), "handoff precedes independent V2 token configuration");
+        bytes32 savedV1 = _snapshotV1();
+
+        // Configure the existing fixed-supply V2 token/router/verifier, with no changes to their source.
+        MugiV2Token nextToken = new MugiV2Token(address(nextGame), address(this), V2_SUPPLY);
+        MugiV2Router nextRouter = new MugiV2Router(IMugiV2Market(address(nextGame)));
+        V2Verifier verifier = new V2Verifier(address(this), vm.addr(0x2222), address(nextGame), 5, 4, 3600);
+        nextGame.configure(nextToken, nextRouter, address(verifier));
+        assertEq(nextToken.totalSupply(), V2_SUPPLY);
+        assertEq(_snapshotV1(), savedV1, "V2 configuration leaves all V1 rights untouched");
+        nextToken.approve(address(nextGame), 100_000_000 ether);
+        nextGame.seedFromV1Migration(uint160(uint256(100) << 96), 100_000_000 ether);
+        assertTrue(nextGame.seeded());
+        assertEq(nextGame.v1MigrationEth(), 0);
+        assertGt(nextGame.positionLiquidity(), 0);
+        assertEq(_snapshotV1(), savedV1, "V2 seeding uses only the completed handoff");
+        nextGame.launch();
+        assertTrue(nextGame.live());
+        vm.deal(V2_BUYER, 5 ether);
+        vm.prank(V2_BUYER);
+        uint256 bought = nextRouter.buy{value: 1 ether}(1, uint64(vm.getBlockTimestamp() + 1 hours));
+        assertGt(bought, 0);
+        assertEq(nextToken.balanceOf(V2_BUYER), bought);
+        assertEq(V2_BUYER.balance, 4 ether);
+        assertEq(nextToken.totalSupply(), V2_SUPPLY, "V2 remains fixed supply after a real trade");
+        assertEq(MugiCrewToken(crew[9]).balanceOf(address(nextGame)), migrationTokens,
+            "V1 receipt inventory stays separate from the independently supplied V2 token");
+        assertEq(_snapshotV1(), savedV1, "V2 launch and trading cannot consume V1 claim reserves");
+
+        // Both lazy V1 token and ETH claims remain exercisable after real V2 trading.
+        uint256 eligible = game.eligibleSupply(9);
+        uint256 aliceTokenBefore = MugiCrewToken(crew[9]).balanceOf(ALICE);
+        uint256 aliceNativeBefore = ALICE.balance;
+        vm.startPrank(ALICE);
+        uint256[10] memory paidTokens = game.claimTokens();
+        uint256 paidEth = game.claimEth(payable(ALICE));
+        vm.stopPrank();
+        assertEq(paidTokens[9], aliceTokens[9]);
+        assertEq(paidEth, aliceEth);
+        assertEq(MugiCrewToken(crew[9]).balanceOf(ALICE), aliceTokenBefore + aliceTokens[9]);
+        assertEq(ALICE.balance, aliceNativeBefore + aliceEth);
+        vm.startPrank(BOB);
+        game.claimToken(9, bobTokens[9]);
+        assertEq(game.claimEth(payable(BOB)), bobEth);
+        vm.stopPrank();
+        assertEq(game.escrowBacking(9), playerTokenReserve - aliceTokens[9] - bobTokens[9]);
+        assertEq(game.reservedPlayerEth(), playerEthReserve - aliceEth - bobEth);
+        assertEq(game.eligibleSupply(9), eligible, "terminal denominator remains the original snapshot");
+        vm.startPrank(ALICE);
+        assertEq(game.claimTokens()[9], 0);
+        assertEq(game.claimEth(payable(ALICE)), 0);
+        vm.stopPrank();
+        vm.expectRevert(MugiIMDGameHook.InvalidState.selector);
+        game.migrateToV2(address(nextGame));
+        _assertSolvent();
+        emit log_named_uint("V1 eliminations completed", game.eliminations());
+        emit log_named_uint("V1 earned ETH retained before claims", playerEthReserve);
+        emit log_named_uint("V1 earned token backing retained before claims", playerTokenReserve);
+        emit log_named_uint("V1 ETH handed to V2", migrationEth);
+        emit log_named_uint("V1 retired receipt tokens handed to V2", migrationTokens);
+        emit log_named_uint("Real fixed-supply V2 buy output", bought);
+        emit log_named_uint("V1 Alice token claim after V2 trading", paidTokens[9]);
+        emit log_named_uint("V1 Alice ETH claim after V2 trading", paidEth);
+    }
+
+    function _snapshotV1() private view returns (bytes32 result) {
+        result = keccak256(abi.encode(
+            game.phase(), game.migrated(), game.claimsExpireAt(), game.aliveMask(),
+            game.reservedPlayerEth(), game.teamEth(), address(game).balance, game.escrowBacking(9),
+            game.eligibleSupply(9), MugiCrewToken(crew[9]).balanceOf(address(game))
+        ));
+        address[5] memory players = [ALICE, BOB, CAROL, EARLY, LATE];
+        for (uint8 i; i < players.length; ++i) {
+            (uint256[10] memory claimable, uint256 earned, uint256[10] memory virtualScaled) =
+                game.previewAccount(players[i]);
+            result = keccak256(abi.encode(result, claimable, earned, virtualScaled));
+        }
+    }
+}

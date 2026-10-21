@@ -70,7 +70,7 @@ contract MugiVRFAdapter {
         bool nativePayment_
     ) {
         if (
-            hook_.code.length == 0 || coordinator_.code.length == 0 || keyHash_ == bytes32(0) || subscriptionId_ == 0
+            hook_ == address(0) || coordinator_ == address(0) || keyHash_ == bytes32(0) || subscriptionId_ == 0
                 || callbackGasLimit_ < 200_000 || callbackGasLimit_ > 2_500_000
         ) {
             revert InvalidConfiguration();
@@ -85,6 +85,7 @@ contract MugiVRFAdapter {
 
     function requestRandomness() external returns (uint256 requestId) {
         if (msg.sender != hook) revert OnlyHook();
+        if (hook.code.length == 0 || address(coordinator).code.length == 0) revert InvalidConfiguration();
         if (activeRequestId != 0 || requesting) revert RequestPending();
         requesting = true;
         requestId = coordinator.requestRandomWords(

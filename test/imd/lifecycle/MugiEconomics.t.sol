@@ -21,7 +21,9 @@ contract MugiEconomicsTest is MugiGameTestBase {
     function setUp() public {
         vm.warp(1_800_000_000);
         _setup(new PoolManager(address(this)));
-        for (uint8 i; i < 10; ++i) initialTokenDust[i] = MugiCrewToken(crew[i]).balanceOf(address(game));
+        for (uint8 i; i < 10; ++i) {
+            initialTokenDust[i] = MugiCrewToken(crew[i]).balanceOf(address(game)) - game.unreleasedReserve(i);
+        }
     }
 
     function testEliminationPaysBookedAndUncollectedTokenFeesBeforeRetirement() public {
@@ -81,6 +83,8 @@ contract MugiEconomicsTest is MugiGameTestBase {
         uint256 finalEth = address(game).balance + game.unredeemedGameFees()
             + _ethForLiquidity(9, game.positionLiquidity(9), false) - game.teamEth() - oldReserved;
         uint256 totalSupply = MugiCrewToken(crew[9]).totalSupply();
+        uint256 unusedReserve = game.unreleasedReserve(9);
+        assertGt(unusedReserve, 0);
         uint256 finalBacking = game.escrowBacking(9);
         uint256 finalEligible = game.eligibleSupply(9);
         vm.warp(game.nextCutoff());
@@ -91,6 +95,8 @@ contract MugiEconomicsTest is MugiGameTestBase {
         assertEq(game.teamTokens(9), 0);
         assertEq(game.teamEth(), expectedEthFees);
         assertEq(game.escrowBacking(9), finalBacking);
+        assertEq(game.unreleasedReserve(9), 0, "finalization retires only the unused reserve");
+        assertEq(MugiCrewToken(crew[9]).totalSupply(), totalSupply - unusedReserve);
         uint256 finalInventory = MugiCrewToken(crew[9]).balanceOf(address(game)) - finalBacking;
         assertGt(finalInventory, 0, "finalization retains tokens for manual V2 handoff");
         assertEq(game.eligibleSupply(9), finalEligible);
@@ -101,7 +107,7 @@ contract MugiEconomicsTest is MugiGameTestBase {
         assertEq(MugiCrewToken(crew[9]).balanceOf(address(game)), finalBacking);
         assertEq(migratedTokens, finalInventory);
         assertEq(migratedTokens, MugiCrewToken(crew[9]).balanceOf(address(this)));
-        assertEq(MugiCrewToken(crew[9]).totalSupply(), totalSupply);
+        assertEq(MugiCrewToken(crew[9]).totalSupply(), totalSupply - unusedReserve);
         _assertTreasuryHasNoGameRights();
         game.withdrawTeamFees();
         game.withdrawTeamFees();
@@ -278,7 +284,8 @@ contract MugiEconomicsTest is MugiGameTestBase {
         pendingMigrationEth = address(game).balance + game.unredeemedGameFees()
             + _ethForLiquidity(survivor, finalLiquidity, false) - game.teamEth() - game.reservedPlayerEth();
         pendingMigrationTokens[survivor] = MugiCrewToken(crew[survivor]).balanceOf(address(game))
-            + _tokensForLiquidity(survivor, finalLiquidity) - game.teamTokens(survivor) - game.escrowBacking(survivor);
+            + _tokensForLiquidity(survivor, finalLiquidity) - game.teamTokens(survivor) - game.escrowBacking(survivor)
+            - game.unreleasedReserve(survivor);
         vm.warp(game.nextCutoff());
         game.finalize();
         _assertBuckets(0);
@@ -358,9 +365,13 @@ contract MugiEconomicsTest is MugiGameTestBase {
             }
         }
         for (uint8 i; i < 10; ++i) {
-            uint256 inventory = game.escrowBacking(i) + game.teamTokens(i) + pendingMigrationTokens[i];
+            uint256 reserve = game.unreleasedReserve(i);
+            uint256 inventory = reserve + game.escrowBacking(i) + game.teamTokens(i) + pendingMigrationTokens[i];
             if (!finalized && (game.aliveMask() & (uint16(1) << i)) != 0) inventory += initialTokenDust[i];
-            assertEq(MugiCrewToken(crew[i]).balanceOf(address(game)), inventory, "escrow/team/dust reconcile");
+            if (finalized || (game.aliveMask() & (uint16(1) << i)) == 0) {
+                assertEq(reserve, 0, "closed crew cannot retain unused reserve");
+            }
+            assertEq(MugiCrewToken(crew[i]).balanceOf(address(game)), inventory, "reserve/escrow/team/dust reconcile");
             // Terminal reward denominators are frozen; escrow remains a live
             // liability until claimed or expired, independent of V2 inventory.
             if (!finalized) assertEq(game.eligibleSupply(i), eligibleSum[i], "system inventory cannot gain holder rights");

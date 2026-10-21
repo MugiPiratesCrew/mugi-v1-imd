@@ -1,0 +1,122 @@
+{
+  "candidate": "this repository",
+  "workspace": "separate V2 workspace",
+  "root": "disposable test root",
+  "files": {
+    "candidate/src/game/MugiAirdrop.sol": {
+      "source": "candidate/src/game/MugiAirdrop.sol",
+      "sha256": "e5731986dc634e290bdcba60262a72baa59afbb33fbd24d9054e3c5b01560ffd"
+    },
+    "candidate/src/game/MugiCrewToken.sol": {
+      "source": "candidate/src/game/MugiCrewToken.sol",
+      "sha256": "4da2978c9863692db48021b31fb45ac76e9ee913acf966cd0d22081ee4657134"
+    },
+    "candidate/src/game/MugiIMDVerifier.sol": {
+      "source": "candidate/src/game/MugiIMDVerifier.sol",
+      "sha256": "675db74da875da5e4f5309b8d89cfba89a38473dcd64b15ee102c76e3e47a954"
+    },
+    "candidate/src/game/MugiReserveMath.sol": {
+      "source": "candidate/src/game/MugiReserveMath.sol",
+      "sha256": "83f863ce892a31768c81930f3d3cfb6daea7bf0de80de778cc965c50ee9a9bba"
+    },
+    "candidate/src/game/MugiVRFAdapter.sol": {
+      "source": "candidate/src/game/MugiVRFAdapter.sol",
+      "sha256": "090b2f5a7201a9224bbb46637ec0c5005f4fef3a165578c8c49e86be645cf6fb"
+    },
+    "candidate/src/imd/MugiIMDAccountingFactory.sol": {
+      "source": "candidate/src/imd/MugiIMDAccountingFactory.sol",
+      "sha256": "2c52125e77e72f1975740956e1752b7e2c36ed63c20c8563ee4faad812192226"
+    },
+    "candidate/src/imd/MugiIMDCrewFactory.sol": {
+      "source": "candidate/src/imd/MugiIMDCrewFactory.sol",
+      "sha256": "3e083f3b26fdcc6263bbb0a1b4954656ebcb1b066d6b0b5d3caef51cd0ee33b2"
+    },
+    "candidate/src/imd/MugiIMDCrewToken.sol": {
+      "source": "candidate/src/imd/MugiIMDCrewToken.sol",
+      "sha256": "cc961d65e37b894343d1da6082974c1c6c5ed49fde6e42d9fc0320f1c78f18cc"
+    },
+    "candidate/src/imd/MugiIMDEngineFactory.sol": {
+      "source": "candidate/src/imd/MugiIMDEngineFactory.sol",
+      "sha256": "eb1ee42f62ebceee3556d289b708d40ed4d969d1374f11f1f6c09e1911a0c2a0"
+    },
+    "candidate/src/imd/MugiIMDGameHook.sol": {
+      "source": "candidate/src/imd/MugiIMDGameHook.sol",
+      "sha256": "aed0434a136b943f9f475a773690119f61424f2b9a69d1cfe1501a406629a4b4"
+    },
+    "candidate/src/imd/MugiIMDSwapRouter.sol": {
+      "source": "candidate/src/imd/MugiIMDSwapRouter.sol",
+      "sha256": "8f114de22a6414fa2c4a1319881754fcfeaceebce77b277afb0f3f0e92277655"
+    },
+    "candidate/src/imd/MugiV1IMDDeploymentFactory.sol": {
+      "source": "candidate/src/imd/MugiV1IMDDeploymentFactory.sol",
+      "sha256": "6ad44fc0324082db96de135d0ca544c4b6aa797827fe55dc9a6e22d5e54ca803"
+    },
+    "candidate/src/imd/libraries/MugiIMDDeploymentAddresses.sol": {
+      "source": "candidate/src/imd/libraries/MugiIMDDeploymentAddresses.sol",
+      "sha256": "ed45d94f18f48cc33a5a291c410161536cd0e878777289b85f97cb4c5403535b"
+    },
+    "candidate/src/imd/libraries/MugiIMDV4Fees.sol": {
+      "source": "candidate/src/imd/libraries/MugiIMDV4Fees.sol",
+      "sha256": "64fec6b08c4317dcd1cdff5f13973016db92ffae2f191520b0ea601b55a69cac"
+    },
+    "candidate/src/imd/modules/MugiIMDBuybacks.sol": {
+      "source": "candidate/src/imd/modules/MugiIMDBuybacks.sol",
+      "sha256": "102b2da0e164ff14de4804b94fbad18255d42c398aab9bdc6f6cc4c9495524f3"
+    },
+    "candidate/src/imd/modules/MugiIMDLedger.sol": {
+      "source": "candidate/src/imd/modules/MugiIMDLedger.sol",
+      "sha256": "dd5fcf8481f5522801bf0d7bff243ce35fcfab77ec96a9c584d31c5ecb8da69f"
+    },
+    "candidate/src/imd/modules/MugiIMDPriceOracle.sol": {
+      "source": "candidate/src/imd/modules/MugiIMDPriceOracle.sol",
+      "sha256": "44f38a2781c9d8b6f9b0a798b7ff8f20b72817d3203a244c50c8cf322d533cdc"
+    },
+    "candidate/src/imd/modules/MugiIMDV4Engine.sol": {
+      "source": "candidate/src/imd/modules/MugiIMDV4Engine.sol",
+      "sha256": "7eb592b9e0fcaf31a80b959994fe72426a898ab140bbdcac12a309000e58baa5"
+    },
+    "candidate/test/imd/lifecycle/MugiGameHook.t.sol": {
+      "source": "candidate/test/imd/lifecycle/MugiGameHook.t.sol",
+      "sha256": "958ed53d11f7a09c260e6a05cefa0d4d56adf6145dd6bbb9e12b7d1d86f50a4f"
+    },
+    "v2/src/game/MugiV2Hook.sol": {
+      "source": "v2/src/game/MugiV2Hook.sol",
+      "sha256": "44aa71206fe3a4fee81b55dcdece50cc3249f213237ab23085ce715deeac42f9"
+    },
+    "v2/src/game/MugiV2Token.sol": {
+      "source": "v2/src/game/MugiV2Token.sol",
+      "sha256": "2c874e5c2b9b3608a67fe3ff7274cf533a272469c9f37874388ca09534c195ea"
+    },
+    "v2/src/game/MugiV2Router.sol": {
+      "source": "v2/src/game/MugiV2Router.sol",
+      "sha256": "700f56cb378430c2bbbfa57cfcf91560249981329665ef080c892ee784f16a37"
+    },
+    "v2/src/game/MugiV2Rounds.sol": {
+      "source": "v2/src/game/MugiV2Rounds.sol",
+      "sha256": "d60ca306b7cc96580d11095f7b4fb72440b408b94d10de12aaf6702602b6ed8d"
+    },
+    "v2/src/game/MugiV2Rewards.sol": {
+      "source": "v2/src/game/MugiV2Rewards.sol",
+      "sha256": "be6459273609b8c852eb4714b063533f887d84e4f35f20a1c87318392e68566b"
+    },
+    "legacy-v1/src/game/MugiV4Engine.sol": {
+      "source": "legacy-v1/src/game/MugiV4Engine.sol",
+      "sha256": "56051e8cae4783c2e2bfe983bd660f4dab94ff985800d5093dd91b01ba7b466d"
+    },
+    "legacy-v1/src/game/MugiPriceOracle.sol": {
+      "source": "legacy-v1/src/game/MugiPriceOracle.sol",
+      "sha256": "6aefa10a50485f57bbe835088ad1ae160206f14eb740771289e27a8f982ea28b"
+    },
+    "legacy-v1/src/game/MugiIMDVerifier.sol": {
+      "source": "legacy-v1/src/game/MugiIMDVerifier.sol",
+      "sha256": "f63a9667ea5b44f4ba474d714ff13790a19a070061141143ea62a251a2c1c8d0"
+    },
+    "test/MugiIMDCompatibleV1ToV2.t.sol": {
+      "source": "test/MugiIMDCompatibleV1ToV2.t.sol",
+      "sha256": "96e6e76f7db5959499bc3ceb2fcd3a6a76f82cbb5fbabec8538d48f75cc21016"
+    }
+  },
+  "foundry_sha256": "43fb4f34d854bc04547804631d0a0abfdaa39ff18786dc6af2e9b141b47db418",
+  "prepared_utc": "2026-10-21T22:43:18.565095+00:00",
+  "forge_version": "forge Version: 1.5.1-stable\nCommit SHA: b0a9dd9ceda36f63e2326ce530c10e6916f4b8a2\nBuild Timestamp: 2025-12-22T11:39:01.425730780Z (1766403541)\nBuild Profile: maxperf"
+}

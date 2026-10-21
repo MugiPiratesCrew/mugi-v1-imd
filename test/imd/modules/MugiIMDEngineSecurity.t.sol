@@ -76,7 +76,7 @@ contract MugiIMDEngineSecurityTest is Test {
         MugiIMDEngineTestHook template = new MugiIMDEngineTestHook(manager);
         vm.etch(HOOK, address(template).code);
         hook = MugiIMDEngineTestHook(payable(HOOK));
-        factory = new MugiIMDEngineFactory();
+        factory = new MugiIMDEngineFactory(address(this));
         engine = factory.deployForHook(HOOK, manager);
         hook.setEngine(engine);
         token = new MugiIMDEngineTestToken();
@@ -84,19 +84,30 @@ contract MugiIMDEngineSecurityTest is Test {
         vm.deal(HOOK, 10 ether);
     }
 
-    function testFactoryRejectsWrongManagerWithoutPoisoningCanonicalEntry() public {
-        MugiIMDEngineFactory otherFactory = new MugiIMDEngineFactory();
+    function testOnlyOwnerCanDeployPredictedEngineOnce() public {
+        MugiIMDEngineFactory otherFactory = new MugiIMDEngineFactory(address(this));
         PoolManager wrongManager = new PoolManager(address(this));
+        address predicted = otherFactory.predictEngine();
+        vm.expectRevert(MugiIMDEngineFactory.Unauthorized.selector);
         vm.prank(address(0xBAD));
-        vm.expectRevert(MugiIMDEngineFactory.InvalidManager.selector);
         otherFactory.deployForHook(HOOK, wrongManager);
-        assertEq(address(otherFactory.engines(HOOK)), address(0));
+        assertEq(address(otherFactory.engine()), address(0));
+        assertEq(predicted.code.length, 0);
+        // Authentication precedes dependency validation, so an outsider cannot
+        // reserve the CREATE nonce with either valid or malformed arguments.
+        vm.expectRevert(MugiIMDEngineFactory.Unauthorized.selector);
         vm.prank(address(0xBAD));
+        otherFactory.deployForHook(address(0), IPoolManager(address(0)));
         MugiIMDV4Engine canonical = otherFactory.deployForHook(HOOK, manager);
+        assertEq(address(canonical), predicted);
+        assertEq(address(otherFactory.engine()), predicted);
         assertEq(address(canonical.manager()), address(manager));
         assertEq(canonical.hook(), HOOK);
-        assertEq(address(otherFactory.deployForHook(HOOK, manager)), address(canonical));
-        assertEq(address(factory.deployForHook(HOOK, manager)), address(engine));
+        vm.expectRevert(MugiIMDEngineFactory.AlreadyDeployed.selector);
+        otherFactory.deployForHook(HOOK, wrongManager);
+        vm.expectRevert(MugiIMDEngineFactory.AlreadyDeployed.selector);
+        factory.deployForHook(HOOK, manager);
+        assertEq(address(factory.engine()), address(engine));
     }
 
     function testCounterfactualConstructorDoesNotCallDependencyAddresses() public {

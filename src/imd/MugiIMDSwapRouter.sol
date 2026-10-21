@@ -44,10 +44,8 @@ contract MugiIMDSwapRouter is IUnlockCallback {
 
     event Swap(address indexed account, uint8 indexed crew, bool buy, uint256 input, uint256 output);
 
-    constructor(MugiGameHook hook_) {
-        if (address(hook_).code.length == 0) revert InvalidConfiguration();
-        IPoolManager manager = hook_.poolManager();
-        if (address(manager).code.length == 0) revert InvalidConfiguration();
+    constructor(MugiGameHook hook_, IPoolManager manager) {
+        if (address(hook_) == address(0) || address(manager) == address(0)) revert InvalidConfiguration();
         hook = hook_;
         poolManager = manager;
     }
