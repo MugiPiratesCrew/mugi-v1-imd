@@ -6,7 +6,7 @@ accounting, no owner pause, and constructor-bound game dependencies. The core
 nine-elimination game and future V2 protocol-fund handoff remain.
 
 Read [ADAPTATION.md](ADAPTATION.md) for the exact changes, reserve supply effect,
-unchanged gameplay and remaining trust/admission limits. Read
+preserved core rules and remaining trust/admission limits. Read
 [the deployment graph](docs/IMD_CONSTRUCTOR_DEPLOYMENT.md) before preparing an IMD
 launch. The four owner-bound factories and all nineteen descendants are disclosed.
 The four-factory launch alone does not seed or activate the game.

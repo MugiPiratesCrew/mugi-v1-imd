@@ -8,7 +8,7 @@ Platform admission is pending. This document does not claim a public deployment.
 
 ## Preserved game rules
 
-Ten crews, the 95/5 initial circulating allocation, fixed daily cutoffs, one VRF
+Ten crews, the 95/5 initial LP/airdrop allocation, fixed daily cutoffs, one VRF
 outcome per round, nine eliminations, 75% loser conversion across survivors,
 pro-rata treasure rewards, LP redistribution, bounded buybacks, team fees,
 permissionless timeout recovery and the 30-day final claim window remain.

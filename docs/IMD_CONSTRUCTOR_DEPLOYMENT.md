@@ -1,6 +1,6 @@
 # Constructor-complete deployment graph
 
-This candidate changes the prior postdeployment initialization architecture. Every application receives its final authorities, token addresses and module addresses in its constructor. There is no application `initialize`, `configure`, `bindAccounting`, or dependency-replacement call. Pool seeding, registration, launching and trading remain ordinary application operations after creation. This engineering design is subject to IMD's explicit admission review; it is not evidence that IMD has approved or deployed it.
+This candidate changes the prior postdeployment initialization architecture. Every application receives its initial owner and fixed token and module bindings in its constructor. There is no application `initialize`, `configure`, `bindAccounting`, or dependency-replacement call. Pool seeding, registration, launching and trading remain ordinary application operations after creation. This engineering design is subject to IMD's explicit admission review; it is not evidence that IMD has approved or deployed it.
 
 The contracts-only manifest lists exactly four full-code factories. Each constructor has one static `address owner` argument, is nonpayable, makes no dependency calls or code-existence checks, and creates no children:
 
@@ -11,7 +11,7 @@ The contracts-only manifest lists exactly four full-code factories. Each constru
 | `MugiIMDAccountingFactory` | Ledger, buyback budgets, price oracle at CREATE nonces 1 through 3 |
 | `MugiIMDEngineFactory` | V4 engine at CREATE nonce 1 |
 
-All **19 descendant contracts** are part of the submitted application and must be reviewed. A four-entry IMD registry record records the factories only. It does not mean those 19 descendants already exist or are individually indexed. Child deployment requires five additional owner transactions and no ETH capital. Seeding pools later requires separate liquidity funding. Do not describe the entire graph as one IMD deployment transaction.
+All **19 descendant contracts** are part of the submitted application and must be reviewed. A four-entry IMD registry record records the factories only. It does not mean those 19 descendants already exist or are individually indexed. Child deployment requires five additional owner transactions with no attached ETH value; transaction gas is still required. Seeding pools later requires separate liquidity funding. Do not describe the entire graph as one IMD deployment transaction.
 
 ## Deterministic planning
 
