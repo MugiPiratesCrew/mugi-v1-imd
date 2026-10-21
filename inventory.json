@@ -1,12 +1,12 @@
 {
   "format": "mugi-imd-source-bundle-v1",
   "sourceAdmissionConfirmed": false,
-  "published": false,
+  "published": true,
   "broadcast": false,
   "manifestIncluded": true,
   "sha256": {
     ".gitignore": "6a0036aead0d7d4db97fa24e6858cb6fa733f9ed15ee9b4288e36ea9a24c36ab",
-    "README.md": "8e7e8f4cbb2b68e4512c242010c5138291c5e026670d41fc351bf85be23b0a6f",
+    "README.md": "4cecd6056be57f816bb6c0bafea50e7020602cf2b6ac85d03c5e6d4a2d6a9211",
     "foundry.toml": "d4f0b4b1752b3e61e3f72699182e503be57af323433ad250142d9d81c4d69b5a",
     "launch.json": "6dd218854d0d0a9b145275f716bd0bdc88dec213ec49aabfde7185ef02a60223",
     "lib/forge-std/LICENSE-APACHE": "50b6bf8bdb63265ce14953b480b7aaa0271e78f56843b99c184abd3ae5048cd7",
